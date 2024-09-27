@@ -1,0 +1,36 @@
+@font-face {
+    font-family: lafl0raFont;
+    src: url('/static/lafl0ra.ttf');
+}
+
+body {
+    font-family: lafl0raFont;
+    background-color: #f5fcff;
+    background-image: url('/static/background2.jpg');
+    background-size: cover; /* Makes the background image cover the entire area */
+    background-position: center; /* Centers the background image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+}
+
+.button {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #cdb4db;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+
+.button:hover {background-color: #cdb4db}
+
+.button:active {
+  background-color: #cdb4db;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
