@@ -1,6 +1,8 @@
 @font-face {
     font-family: lafl0raFont;
+    /* src: url('/static/lafl0ra.ttf'); */
     src: url('/static/lafl0ra.ttf');
+    
 }
 
 body {

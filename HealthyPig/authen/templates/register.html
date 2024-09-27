@@ -1,21 +1,17 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Login
+Register
 {% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     
     <div class="col-md-6" style="border-radius: 2.5%; background-color: rgba(245, 250, 255, 0.75); padding: 2%; margin-top: 2%;">
-        <h2 class="text-center" style="padding-top: 2%;"> LOGIN </h2>
+        <h2 class="text-center" style="padding-top: 2%;"> REGISTER </h2>
         <form method="POST" action="{% url 'login' %}">
             {% csrf_token %}
             <!-- [[ form.username.errors ]] อย่าลืมเปลี่ยนเป็นปีกกา -->
-            <div class="mb-3">
-                <label for="username" class="form-" style="margin-top: 5%"">username</label>
-                <input type="text" class="form-control" id="username" name="username" style="margin-top: 1%;" placeholder="Type your username . . ." required>
-            </div>
             {{ form.password.errors }}
             <div class="mb-3">
                 <label for="password" class="form-label" style="margin-top: 3%;">password</label>

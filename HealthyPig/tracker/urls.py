@@ -3,7 +3,9 @@ from django.urls import path
 from tracker.views import *
 
 
+
 urlpatterns = [
+    path('', HomePageView.as_view(), name="homepage"),
     # path('', CategoryListView.as_view(), name="category-list"),
     # path('create', CategoryCreateView.as_view(), name="category-create"),
     # path('edit/<int:pk>', CategoryEditView.as_view(), name="category-edit"),
