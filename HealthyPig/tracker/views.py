@@ -16,11 +16,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 class HomePageView(views.View):
     # login_url = "/authen/"
     # permission_required = [".view_blog"]
-    
-    def get(self, request: HttpRequest):
-        return render(request, "homepage.html")
-
-
+    def get(self, request):
+        # form = AuthenticationForm()
+        return render(request, 'homepage.html')
 
 class BlogDetailView(views.View):
     # login_url = "/authen/"

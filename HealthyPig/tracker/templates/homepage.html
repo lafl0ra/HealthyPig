@@ -1,11 +1,64 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}
-Homepage
+หน้าแรก 
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'homepage.css' %}">
 {% endblock %}
 
 {% block content %}
     <div>
-        <h1>HOME PAGE</h1>
+        <h1 style="text-align: center; align-items: center;">WELCOME HEALTHYPIG</h1>
+        <h1 style="text-align: center; align-items: center;">ยินดีต้อนรับสู่แอปคำนวณแคลอรี่</h1>
     </div>
+        <!-- ส่วน Hero -->
+        <section class="hero">
+            <div class="container">
+                <p style="text-align: center; align-items: center;">เว็ปที่จะช่วยคุณให้คำนวณปริมาณแคลอรี่ที่คุณบริโภคต่อวัน เพื่อการควบคุมการกินและสุขภาพที่ดียิ่งขึ้น</p>
+            </div>
+            <div>
+                <img src="{% static 'logoPig1' %}" />
+            </div>
+        </section>
+    
+        <!-- ส่วนคุณสมบัติ -->
+        <!-- <section class="features">
+            <div class="container">
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <h3>คำนวณแคลอรี่ง่ายๆ</h3>
+                        <p>เพียงกรอกข้อมูลอาหารที่คุณรับประทาน แอปของเราจะช่วยคำนวณปริมาณแคลอรี่ให้คุณอัตโนมัติ</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>ติดตามผลการบริโภค</h3>
+                        <p>บันทึกและติดตามการบริโภคแคลอรี่ของคุณในแต่ละวัน เพื่อการวางแผนการกินที่มีประสิทธิภาพ</p>
+                    </div>
+                </div>
+            </div>
+        </section> -->
+    
+        <!-- ส่วนแนะนำการใช้งาน -->
+        <!-- <section class="how-it-works">
+            <div class="container">
+                <h2>วิธีการใช้งาน</h2>
+                <ol>
+                    <li>สมัครสมาชิกหรือเข้าสู่ระบบ</li>
+                    <li>เพิ่มรายการอาหารที่คุณรับประทานในแต่ละวัน</li>
+                    <li>ดูผลการคำนวณแคลอรี่และติดตามความก้าวหน้าของคุณ</li>
+                </ol>
+            </div>
+        </section> -->
+    
+        <!-- ส่วนการติดต่อ -->
+        <section class="contact">
+            <div class="bottom-right" style="background-color:pink">
+                <h2>ติดต่อเรา</h2>
+                <p>หากคุณมีคำถามหรือข้อเสนอแนะ กรุณาติดต่อเราผ่านทางอีเมล <a href="mailto:healthypig@gmail.com">healthypig@gmail.com</a></p>
+            </div>
+        </section>
 {% endblock %}
+

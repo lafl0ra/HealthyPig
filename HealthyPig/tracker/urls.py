@@ -1,6 +1,6 @@
 from django.urls import path
 
-from tracker.views import *
+from .views import HomePageView
 
 
 

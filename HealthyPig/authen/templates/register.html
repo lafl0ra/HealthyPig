@@ -1,35 +1,80 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Register
+  Register
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    
-    <div class="col-md-6" style="border-radius: 2.5%; background-color: rgba(245, 250, 255, 0.75); padding: 2%; margin-top: 2%;">
-        <h2 class="text-center" style="padding-top: 2%;"> REGISTER </h2>
-        <form method="POST" action="{% url 'login' %}">
-            {% csrf_token %}
-            <!-- [[ form.username.errors ]] อย่าลืมเปลี่ยนเป็นปีกกา -->
-            {{ form.password.errors }}
-            <div class="mb-3">
-                <label for="password" class="form-label" style="margin-top: 3%;">password</label>
-                <input type="password" class="form-control" id="password" name="password" style="margin-top: 1%;" placeholder="Type your password . . ." required>
-            </div>
-            <button type="submit" class="button w-50 mx-auto d-block" style="margin-top: 10%;">LOGIN</button>
-            <br>
-            <p style="margin: 0 auto; width: fit-content;">Don't have an account?</p>
-            <p style="margin: 0 auto; width: fit-content;" href=""> register </p>
-            <br>
-            {% if messages %}
-                <div>
-                    {% for message in messages %}
-                        <p class="text-danger">{{ message }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </form>
+  <div class="row justify-content-center">
+    <div class="col-md-6" style="border-radius: 2.5%; background-color: rgba(245, 250, 255, 0.75); padding: 2%; margin-top: 2%; max-height: 80vh; overflow-y: auto;">
+      <h2 class="text-center" style="padding-top: 2%;">REGISTER</h2>
+      <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        {{ form.password.errors }}
+        <div class="mb-3">
+          <label for="username" class="form-label" style="margin-top: 3%;">Username</label>
+          {{ form.username }}
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label" style="margin-top: 3%;">Email</label>
+          {{ form.email }}
+        </div>
+        <div class="mb-3">
+          <label for="password1" class="form-label" style="margin-top: 3%;">Password</label>
+          {{ form.password1 }}
+        </div>
+        <div class="mb-3">
+          <label for="password2" class="form-label" style="margin-top: 3%;">Confirm password</label>
+          {{ form.password2 }}
+        </div>
+        <br />
+        <h2 class="text-center" style="padding-top: 2%;">FILL YOUR INFORMATION</h2>
+        <div class="mb-3">
+          <label for="birth_date" class="form-label" style="margin-top: 3%;">Birth Date</label>
+          {{ form.birth_date }}
+        </div>
+        <div class="mb-3">
+          <label for="gender" class="form-label" style="margin-top: 3%;">Gender (Biological Sex)</label>
+          {% comment %}ใส่ div form-control เพื่อความสวยงาม{% endcomment %}
+          <div class="form-control">{{ form.gender }}</div>
+        </div>
+        <div class="mb-3">
+          <label for="height" class="form-label" style="margin-top: 3%;">Height</label>
+          {{ form.height }}
+        </div>
+        <div class="mb-3">
+          <label for="weight" class="form-label" style="margin-top: 3%;">Weight (kg)</label>
+          {{ form.weight }}
+        </div>
+        <div style="background-color: #ffeef0; border: 1px solid #ffb3b3; border-radius: 5px; padding: 10px; margin-bottom: 15px; margin-top: 8%;">
+          <div class="mb-3">
+            <label for="goal_weight" class="form-label" style="font-weight: bold; color: #d63384; margin-bottom: 5px;">Goal Weight (kg)</label>
+            {{ form.goal_weight }}
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="activity" class="form-label" style="margin-top: 3%;"> Activity Frequency  </label>
+          {% comment %}ใส่ div form-control เพื่อความสวยงาม{% endcomment %}
+          <div class="form-control">{{ form.activity }}</div>
+        </div>
+        <div style="background-color: #ffeef0; border: 1px solid #ffb3b3; border-radius: 5px; padding: 10px; margin-bottom: 15px; margin-top: 8%;">
+          <div class="mb-3">
+            <label id="goal_weight_per_week" class="form-label" style="font-weight: bold; color: #d63384; margin-bottom: 5px;">Weekly Weight Loss Goal</label>
+            <div class="form-control"> {{ form.goal_weight_per_week }} </div>
+          </div>
+        </div>
+        <button type="submit" class="button w-50 mx-auto d-block" style="margin-top: 10%;">REGISTER</button>
+        <br />
+        {% comment %} ตรงนี้เอาไว้ pop up เวลาใส่ฟอร์มผิด ไม่รู้จะได้ใช้ไหม ใส่ไปก่อน {% endcomment %}
+        {% if messages %}
+          <div>
+            {% for message in messages %}
+              <p class="text-danger">{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+      </form>
     </div>
-</div>
+  </div>
 {% endblock %}
