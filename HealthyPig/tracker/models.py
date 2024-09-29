@@ -58,5 +58,3 @@ class ExerciseRecord(models.Model):
     datetime_record = models.DateTimeField(auto_now_add=True) # auto_now_add จะบันทึกเวลาที่สร้างวัตถุครั้งแรก
     amount= models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.0)
     sum_calories = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.0)
-    
-    

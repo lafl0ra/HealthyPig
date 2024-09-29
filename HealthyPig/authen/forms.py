@@ -57,7 +57,7 @@ class RegisterForm(UserCreationForm):
         max_length=150,
         widget=forms.PasswordInput(attrs={
             "class": "form-control",
-            "id": "password1"
+            "id": "password2"
         }),
         required=True
     )

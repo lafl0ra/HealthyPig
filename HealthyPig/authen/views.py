@@ -28,40 +28,41 @@ class LogoutView(View):
     def get(self, request):
         logout(request)
         return redirect('login')
-    
+
 class RegisterView(View):
     def get(self, request):
         form = RegisterForm()
         return render(request, 'register.html', {"form": form})
     
-    # @transaction.atomic
+
     def post(self, request):
         form = RegisterForm(request.POST)
         if form.is_valid():
+            user = form.save()
             print(55555555)
             birth_date = form.cleaned_data['birth_date']
             gender = form.cleaned_data['gender']
-            height = form.cleaned_data['height']
-            weight = form.cleaned_data['weight']
-            goal_weight = form.cleaned_data['goal_weight']
+            height = float(form.cleaned_data['height'])
+            weight = float(form.cleaned_data['weight'])
+            goal_weight = float(form.cleaned_data['goal_weight'])
             
-            # คำนวน age
-            today = datetime.today()  # วันที่ปัจจุบัน
-            age = today.year - birth_date.year  # ลบปี
-            if (today.month, today.day) < (birth_date.month, birth_date.day): # ถ้ายังไม่ถึงวันเกิดปีนี้ ให้ลบอายุไปอีก 1 ปี
+
+            today = datetime.today() 
+            age = today.year - birth_date.year  
+            if (today.month, today.day) < (birth_date.month, birth_date.day): 
                 age -= 1
                 
-            # คำนวน BMI
+
             BMI = (weight) / (height/100)**2
             
-            # คำนวน BMR
+
             BMR = 0
             if gender == "F":
                 BMR = 665 + (9.6 * weight) +  (1.8 * height) - (4.7 * age)
             else: 
                 BMR = 66 + (13.7 * weight) + (5 * height) - (6.8 * age)
                 
-            # คำนวน TDEE
+
             TDEE = 0
             activity_level = form.cleaned_data['activity']
             if activity_level == 'sedentary':
@@ -87,6 +88,7 @@ class RegisterView(View):
                 goal_amount_day = (goal_weight / 1) * 7
 
             new_userprofile = UserProfile(
+                user=user,
                 birth_date=birth_date,
                 gender=gender,
                 height=height,
@@ -98,8 +100,6 @@ class RegisterView(View):
             )
             new_userprofile .save()
             print(1)
-            # datetime.today().time() เอาเวลาอย่างเดียว
-            # date.time() เอาวันอย่า
             datetime_update = datetime.today()
             new_user_info_record = User_Info_Record(
                 datetime_update=datetime_update,
