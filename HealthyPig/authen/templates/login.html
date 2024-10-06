@@ -7,7 +7,7 @@ Login
 {% block content %}
 <div class="row justify-content-center">
     
-    <div class="col-md-6" style="border-radius: 2.5%; background-color: rgba(245, 250, 255, 0.75); padding: 2%; margin-top: 2%;">
+    <div class="col-md-6" style="border-radius: 50px; background-color: rgba(245, 250, 255, 0.75); padding: 2%; margin-top: 7.5%;">
         <h2 class="text-center" style="padding-top: 2%;"> LOGIN </h2>
         <form method="POST" action="{% url 'login' %}">
             {% csrf_token %}
@@ -24,7 +24,14 @@ Login
             <button type="submit" class="button w-50 mx-auto d-block" style="margin-top: 10%;">LOGIN</button>
             <br>
             <p style="margin: 0 auto; width: fit-content;">Don't have an account?</p>
-            <p style="margin: 0 auto; width: fit-content;" href=""> register </p>
+            <div style="text-align: center;">
+                <a href="{% url 'register' %}" style="text-decoration: none; color: #4CAF50; text-decoration: underline;">
+                    Register
+                </a>
+            </div>
+            
+            
+
             <br>
             {% if messages %}
                 <div>

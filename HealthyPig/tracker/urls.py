@@ -1,11 +1,11 @@
 from django.urls import path
 
-from .views import HomePageView
-
-
+from .views import HomePageView, MainPageView
 
 urlpatterns = [
     path('', HomePageView.as_view(), name="homepage"),
+    path('mainpage/', MainPageView.as_view(), name="mainpage"),
+    
     # path('', CategoryListView.as_view(), name="category-list"),
     # path('create', CategoryCreateView.as_view(), name="category-create"),
     # path('edit/<int:pk>', CategoryEditView.as_view(), name="category-edit"),

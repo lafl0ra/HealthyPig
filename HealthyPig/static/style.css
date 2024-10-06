@@ -6,13 +6,15 @@
 }
 
 body {
-    font-family: lafl0raFont;
-    background-color: #f5fcff;
-    background-image: url('/static/background2.jpg');
-    background-size: cover; /* Makes the background image cover the entire area */
-    background-position: center; /* Centers the background image */
-    background-repeat: no-repeat; /* Prevents the image from repeating */
+  font-family: lafl0raFont;
+  background-color: #f5fcff;
+  background-image: url('/static/background2.jpg');
+  background-size: cover; /* Makes the background image cover the entire area */
+  background-position: center; /* Centers the background image */
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+  background-attachment: fixed; /* Prevents the background from moving when scrolling */
 }
+
 
 .button {
   display: inline-block;
@@ -36,3 +38,4 @@ body {
   box-shadow: 0 5px #666;
   transform: translateY(4px);
 }
+

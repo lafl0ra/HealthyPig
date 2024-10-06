@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Main Page
+{% endblock %}
+
+{% block content %}
+<style>
+    /* แผนภูมิวงกลม */
+    .container {
+        display: flex; /* ใช้ Flexbox สำหรับการจัดตำแหน่ง */
+        justify-content: center; /* จัดให้อยู่กลางแนวนอน */
+        align-items: center; /* จัดให้อยู่กลางแนวตั้ง */
+
+    }
+    .pie {
+        --p: 25;
+        --b: 25px;
+        --c: darkred;
+        --w: 300px;
+
+        width: var(--w);
+        aspect-ratio: 1;
+        position: relative;
+        display: inline-grid;
+        margin: 5px;
+        place-content: center;
+        font-size: 25px;
+        font-weight: bold;
+        font-family: sans-serif;
+       
+    }
+    .pie:before,
+    .pie:after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+    }
+    .pie:before {
+        inset: 0;
+        background:
+            radial-gradient(farthest-side, var(--c) 98%, #0000) top/var(--b) var(--b) no-repeat,
+            conic-gradient(var(--c) calc(var(--p) * 1%), #0000 0);
+        -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - var(--b)), #000 calc(100% - var(--b)));
+        mask: radial-gradient(farthest-side, #0000 calc(99% - var(--b)), #000 calc(100% - var(--b)));
+        border: 2px solid #000;
+    }
+    .pie:after {
+        inset: calc(50% - var(--b)/2.1); /* ปรับค่าหารเพื่อลดขนาดวงกลมภายใน */
+        background: var(--c);
+        transform: rotate(calc(var(--p) * 3.6deg)) translateY(calc(50% - var(--w) / 2.02)); /* ปรับค่า translateY เล็กน้อย */
+    }
+
+    h1 {
+        margin-top: 5%;
+    }
+
+    body {
+        text-align: center;
+    }
+
+    p {
+        font-family: lafl0raFont;
+        font-weight: normal;
+        line-height: 1.2; /* ปรับค่านี้ตามต้องการ */
+      }
+    
+    h3 {
+        font-size: 20px;
+        text-align: left;
+        padding-left: 20px;
+        font-weight: bold;
+        color: black
+
+    }
+
+    body{
+        background-color:#eee;
+        font-family: lafl0raFont;
+        font-weight: 300;
+    }
+
+       .height{
+        height: 100vh;
+    }
+       
+
+       .search{
+       position: relative;
+       box-shadow: 0 0 40px rgba(51, 51, 51, .1);
+    }
+
+       .search input{
+        height: 60px;
+        text-indent: 25px;
+        border: 2px solid #d6d4d4;
+    }
+
+    /* ช่องค้นหา */
+.input-search {
+    border-radius: 10px;
+    width: 40%;
+    padding: 8px;
+    border: 1px solid #555;
+    margin-right: 10px;
+}
+
+/* ปุ่มค้นหา */
+.button-search {
+    border-radius: 10px;
+    background-color: #555;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button-search:hover {
+    background-color: #333;
+}
+
+/* ปุ่ม Add New Booking */
+.button-add-booking {
+    border-radius: 10px;
+    background-color: #ff85a1;
+    color: white;
+    padding: 8px 15px;
+    text-decoration: none;
+    margin-left: 10px;
+    display: inline-block;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button-add-booking:hover {
+    background-color: #ff6585;
+}
+
+/* ตารางทั้งหมด */
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 18px;
+    font-weight: normal;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+/* เส้นขอบของหัวตาราง */
+.styled-table th {
+    background-color: #6c757d;
+    color: white;
+    text-align: center;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+}
+
+/* เส้นขอบของแถวข้อมูล */
+.styled-table td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    text-align: center;
+}
+
+.styled-table tr {
+    background-color: #ffffff;
+}
+
+/* เปลี่ยนสีแถวเมื่อวางเมาส์ */
+.styled-table tr:hover {
+    background-color: #f1c0e8;
+}
+
+/* เส้นขอบรวม */
+.styled-table th, .styled-table td {
+    border: 1px solid #dddddd;
+}
+
+
+
+</style>
+<div>
+<div class="col-md-6" style="border-radius: 50px; background-color: #faedcb; padding: 2%; margin-top: 6%; margin-bottom: 2%; width: 90%; border: 2px solid #000; padding-bottom: 10%;">
+    <h1>
+        Hello {{ user.username }}
+    </h1>
+    <p style="margin-bottom: 8%;">
+        This is your report for today.
+    </p>
+    <table style="width: 100%; height: 300px; margin: 0 auto;"> <tr>
+        <td colspan="2" style="text-align: center; width: 49%%;"> <div class="container">
+            <div class="pie" style="--p:90; --c:#cdb4db; --w: 400px;"> 
+                <p style="font-size: 18px;"> today </p>
+                {% comment %} เดี๋ยวแก้ {% endcomment %}
+                <p style="font-size: 90px;">90****</p>
+                <p style="font-size: 18px;">
+                    kcal left from 
+                    <span class="text-danger">{{ user_profile.TDEE }}</span> 
+                    kcal.
+                </p>
+        </td>
+        <td style="width: 2%%;"></td>
+        <td style="text-align: center; width: 49%; margin-left: 2%;" >
+            <h3 style="margin-bottom: 5%;">
+                Calories consumed from food
+            </h3>
+            <table style="margin: 0 auto; width: 50%;">
+                <tr>
+                    <td style="width: 30%; vertical-align: top;">
+                        <img src="/static/mainpage_1.png" alt="Food" width="50">
+                    </td>
+                    <td style="width: 30%; vertical-align: bottom;">
+                        <p class="text-danger" style="font-size: 40px;"> 0 </p>
+                    </td>
+                    <td style="width: 30%; vertical-align: bottom;">
+                        <p class="text-secondary" style="font-size: 40px"> kcal. </p>
+                    </td>
+                </tr>
+            </table>
+            <h3 style="margin-top: 10%; margin-bottom: 5%;">
+                Calories burned from exercise
+            </h3>
+            <table style="margin: 0 auto; width: 50%;">
+                <tr>
+                    <td style="width: 30%; vertical-align: top;">
+                        <img src="/static/mainpage_2.png" alt="exercise" width="50">
+                    </td>
+                    <td style="width: 30%; vertical-align: bottom;">
+                        <p class="text-success" style="font-size: 40px;"> 0 </p>
+                    </td>
+                    <td style="width: 30%; vertical-align: bottom;">
+                        <p class="text-secondary" style="font-size: 40px"> kcal. </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+      </tr>
+    </table>
+</div>
+<div class="col-md-6" style="border-radius: 50px; background-color: #c6def1 ; padding: 2%; margin-top: 6%; margin-bottom: 2%; width: 90%; border: 2px solid #000; padding-bottom: 7%;" >
+    <br><br>
+    <h2>
+        Add your foods
+    </h2><br>
+    <table style="width: 100%; height: 500px; margin: 0 auto;"> <tr>
+        <td style="text-align: center; width: 49%; margin-left: 2%; padding: 15px; border-radius: 15px;">
+            <form method="GET" action="{% url 'mainpage' %}">
+                <input class="input-search" type="text" name="search" placeholder="Search Menu/Ingredient">
+                <button class="button-search" type="submit">Search</button>
+                <a class="button-add-booking" href="#">Add New Menu</a>
+            </form>
+            
+            
+            <div style="overflow-x: hidden; overflow-y: auto; max-height: 400px; width: 100%; margin-top: 2.5%;">
+                <table class="styled-table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Calories</th>
+                        <th>Description</th>
+                        <th>Quantity in grams</th>
+                        <th>Owner</th>
+                    </tr>
+                    <tbody>
+                        {% for food in foods %}
+                        <tr>
+                            <td> {{ food.id }} </td>
+                            <td> {{ food.name }} </td>
+                            <td style="color: darkblue;"> {{ food.calories }} kcal</td>
+                            <td> {{ food.description }} </td>
+                            <td> {{ food.quantity_in_grams }} g . </td>
+                            <td> {{ food.user.username}} </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </td>
+      </tr>
+    </table>
+
+    <br><br>
+    <h2>
+        Add your exercises
+    </h2><br>
+    <table style="width: 100%; height: 500px; margin: 0 auto;"> <tr>
+        <td style="text-align: center; width: 49%; margin-left: 2%; padding: 15px; border-radius: 15px;">
+            <form method="GET" action="{% url 'mainpage' %}">
+                <input class="input-search" type="text" name="search2" placeholder="Search Exercise">
+                <input class="button-search" type="submit" value="Search">
+            </form>
+            <div style="overflow-x: hidden; overflow-y: auto; max-height: 400px; width: 100%; margin-top: 2.5%;">
+                <table class="styled-table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Calories (Minute) </th>
+                        <th>Calories (Hour) </th>
+                        <th>Description</th>
+                    </tr>
+                    <tbody>
+                        {% for exercise in exercises %}
+                        <tr>
+                            <td> {{ exercise.id }} </td>
+                            <td> {{ exercise.name }} </td>
+                            <td> {{ exercise.calories_burned_per_min }} kcal  </td>
+                            <td style="color: darkblue;"> {{ exercise.calories_burned_per_hour }} kcal </td>
+                            <td> {{ exercise.description }} </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+              
+        </td>
+      </tr>
+    </table>
+</div>
+</div>
+{% endblock %}
+
+

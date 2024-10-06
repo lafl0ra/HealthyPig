@@ -5,32 +5,39 @@
 {% endblock %}
 
 {% block content %}
-  <div class="row justify-content-center">
-    <div class="col-md-6" style="border-radius: 2.5%; background-color: rgba(245, 250, 255, 0.75); padding: 2%; margin-top: 2%; max-height: 80vh; overflow-y: auto;">
+  <div class="row justify-content-center" style="margin-top: 3%;">
+    <div class="col-md-6" style="border-radius: 15px; background-color: rgba(245, 250, 255, 0.75); padding: 2%; margin-top: 2%; max-height: 80vh; overflow-y: auto;">
       <h2 class="text-center" style="padding-top: 2%;">REGISTER</h2>
       <form method="POST" action="{% url 'register' %}">
         {% csrf_token %}
         {{ form.password.errors }}
         <div class="mb-3">
           <label for="username" class="form-label" style="margin-top: 3%;">Username</label>
+            {{ form.username.errors }}
           {{ form.username }}
         </div>
         <div class="mb-3">
           <label for="email" class="form-label" style="margin-top: 3%;">Email</label>
+          {{ form.email.errors }}
           {{ form.email }}
         </div>
-        <div class="mb-3">
-          <label for="password1" class="form-label" style="margin-top: 3%;">Password</label>
+        
+        <div class="mb-3" style="margin-top: 7%;">
+          {% comment %} แสดง error ของ password ทั้งสอง {% endcomment %}
+        {{ form.password2.errors }}
+          <label for="password1" class="form-label">Password</label>
           {{ form.password1 }}
         </div>
         <div class="mb-3">
           <label for="password2" class="form-label" style="margin-top: 3%;">Confirm password</label>
+          
           {{ form.password2 }}
         </div>
         <br />
         <h2 class="text-center" style="padding-top: 2%;">FILL YOUR INFORMATION</h2>
         <div class="mb-3">
           <label for="birth_date" class="form-label" style="margin-top: 3%;">Birth Date</label>
+          {{ form.birth_date.errors }}
           {{ form.birth_date }}
         </div>
         <div class="mb-3">
@@ -40,15 +47,18 @@
         </div>
         <div class="mb-3">
           <label for="height" class="form-label" style="margin-top: 3%;">Height</label>
+          {{ form.height.errors }}
           {{ form.height }}
         </div>
         <div class="mb-3">
           <label for="weight" class="form-label" style="margin-top: 3%;">Weight (kg)</label>
+          {{ form.weight.errors }}
           {{ form.weight }}
         </div>
         <div style="background-color: #ffeef0; border: 1px solid #ffb3b3; border-radius: 5px; padding: 10px; margin-bottom: 15px; margin-top: 8%;">
           <div class="mb-3">
             <label for="goal_weight" class="form-label" style="font-weight: bold; color: #d63384; margin-bottom: 5px;">Goal Weight (kg)</label>
+            {{ form.goal_weight.errors }}
             {{ form.goal_weight }}
           </div>
         </div>

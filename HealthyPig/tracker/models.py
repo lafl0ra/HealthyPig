@@ -33,10 +33,10 @@ class Food(models.Model):
     name = models.CharField(max_length=150, null=False)
     calories = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.0)
     description = models.TextField()
-    quantity_in_grams = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity_in_grams = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     ingredients = models.ManyToManyField('self', symmetrical=False, related_name='included_in')
     # staff = models.ForeignKey(User, on_delete=models.CASCADE) ไม่รู้ว่าต้องมีไหม หรือใช้รวมกับ user ด้านล่างได้เลย
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     food_type = models.ManyToManyField(FoodType)
 
 class FoodRecord(models.Model):
@@ -48,8 +48,8 @@ class FoodRecord(models.Model):
 
 class Exercise(models.Model): # EXERCISE ห้ามลบ แก้ไขกับเพิ่มได้อยางเดียว
     staff = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    name = models.CharField(max_length=20, null=False)
-    calories_burned_per_min = models.IntegerField(null=False)
+    name = models.CharField(max_length=100, null=False)
+    calories_burned_per_min = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.0)
     description = models.TextField()
 
 class ExerciseRecord(models.Model):

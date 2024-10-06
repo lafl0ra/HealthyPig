@@ -20,10 +20,10 @@ class LoginView(View):
         if form.is_valid():
             user = form.get_user() 
             login(request,user)
-            return redirect('blog-list')
+            return redirect('mainpage')
         return render(request,'login.html', {"form":form})
 
-class LogoutView(View):
+class LogoutView(View): 
     
     def get(self, request):
         logout(request)
@@ -39,22 +39,18 @@ class RegisterView(View):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            print(55555555)
             birth_date = form.cleaned_data['birth_date']
             gender = form.cleaned_data['gender']
             height = float(form.cleaned_data['height'])
             weight = float(form.cleaned_data['weight'])
             goal_weight = float(form.cleaned_data['goal_weight'])
             
-
             today = datetime.today() 
             age = today.year - birth_date.year  
             if (today.month, today.day) < (birth_date.month, birth_date.day): 
                 age -= 1
                 
-
             BMI = (weight) / (height/100)**2
-            
 
             BMR = 0
             if gender == "F":
@@ -62,7 +58,6 @@ class RegisterView(View):
             else: 
                 BMR = 66 + (13.7 * weight) + (5 * height) - (6.8 * age)
                 
-
             TDEE = 0
             activity_level = form.cleaned_data['activity']
             if activity_level == 'sedentary':
@@ -98,8 +93,7 @@ class RegisterView(View):
                 goal_amount_day=goal_amount_day,
                 goal_weight=goal_weight
             )
-            new_userprofile .save()
-            print(1)
+            new_userprofile.save()
             datetime_update = datetime.today()
             new_user_info_record = User_Info_Record(
                 datetime_update=datetime_update,
@@ -107,7 +101,6 @@ class RegisterView(View):
                 user=new_userprofile,
             )
             new_user_info_record.save()
-            print(2)
             return redirect('login')
         else:
             print(form.errors)

@@ -1,12 +1,9 @@
 from django import forms
-# from .models import tracker
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from tracker.models import UserProfile, User_Info_Record
 from django.core.exceptions import ValidationError
-from django.utils import timezone
 from datetime import date
-
 
 class RegisterForm(UserCreationForm):
     ACTIVITY_CHOICES = [  # เพื่อเอาไปคำนวน TDEE
@@ -34,7 +31,7 @@ class RegisterForm(UserCreationForm):
         required=True
     )
     
-    email = forms.CharField(
+    email = forms.EmailField(
         max_length=150,
         widget=forms.TextInput(attrs={
             "class": "form-control",
@@ -67,17 +64,20 @@ class RegisterForm(UserCreationForm):
         widget=forms.Select(attrs={"class": "dropdown-item", "id": "goal_weight_per_week"}),
         required=True
     )
+    
     birth_date = forms.DateField(
         widget=forms.DateInput(
             attrs={"class": "form-control", "type": "date", "id": "birth_date"}),
         required=True
     )
+    
     gender = forms.ChoiceField(
         choices=UserProfile.GENDER_CHOICES,
         # Use Select widget for choices
         widget=forms.Select(attrs={"class": "dropdown-item", "id": "gender"}),
         required=True
     )
+    
     height = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -86,6 +86,7 @@ class RegisterForm(UserCreationForm):
         required=True,
         min_value=0
     )
+    
     weight = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -94,6 +95,7 @@ class RegisterForm(UserCreationForm):
         required=True,
         min_value=0
     )
+    
     goal_weight = forms.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -128,6 +130,19 @@ class RegisterForm(UserCreationForm):
 
     def clean_weight(self):
         weight = self.cleaned_data.get('weight')
-        if weight < 10 or weight > 500:
+        if weight < 10 or weight > 300:
             raise ValidationError("Please enter a realistic weight (kg).")
         return weight
+    
+    def clean_goal_weight(self):
+        goal_weight = self.cleaned_data.get("goal_weight")
+        weight = self.cleaned_data.get("weight")
+
+        if goal_weight <= 0:
+            raise ValidationError("Goal weight must be a positive value.")
+
+        if weight and goal_weight >= weight:
+            raise ValidationError("Goal weight must be less than your current weight.")
+
+        return goal_weight
+    
