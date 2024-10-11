@@ -1,74 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %} Title {% endblock %} </title>
-    {% load bootstrap5 %} 
-    {% load static %} 
-    {% bootstrap_css %} 
-    {% bootstrap_javascript %}
-    <link rel="stylesheet" href="{% static 'style.css' %}" />
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/components/charts/chart-1/assets/css/chart-1.css">
-    {% block style %} {% endblock %}
-  </head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            {% block title %} Title {% endblock %}
+        </title>
+        {% load bootstrap5 %} {% load static %} {% bootstrap_css %} {% bootstrap_javascript %}
+        <link rel="stylesheet" href="{% static 'style.css' %}" />
+        <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/components/charts/chart-1/assets/css/chart-1.css" />
+        {% block style %}
+        <style>
+            body {
+                font-family: "lafl0raFont";
+            }
+            .btn-language {
+                background-color: transparent; /* พื้นหลังใส */
+                color: #6c757d; /* สีข้อความ */
+                border: 1px solid #6c757d; /* กรอบสี */
+                padding: 8px 12px; /* ช่องว่างภายใน */
+                border-radius: 5px; /* ทำมุมให้โค้ง */
+                cursor: pointer; /* แสดงเคอร์เซอร์มือเมื่อชี้ */
+                transition: background-color 0.3s, color 0.3s; /* เอฟเฟกต์เมื่อเอาเมาส์ไปวาง */
+                font-size: 0.9em; /* ขนาดฟอนต์ */
+            }
 
-  <body>
-    <nav
-  class="navbar navbar-expand-lg navbar-light p-2"
-  style="
-    background-color: #ffc8dd;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-  "
->
-  <div class="container-fluid">
-    <a class="nav-link text-dark" href="{% url 'homepage' %}" style="font-size: 25px; font-family: lafl0raFontBold;"> Healthy-Pig </a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNav"
-      aria-controls="navbarNav"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        {% if user.is_authenticated %}
-        <li class="nav-item d-inline mx-2">
-          {% comment %} href="{% url 'profile' %}" {% endcomment %}
-          <p class="nav-link text-dark">I'm, {{ user.username }}</p>
-        </li>
-        <li class="nav-item d-inline mx-2">
-          <a class="nav-link text-success" href="{% url 'mainpage' %}"><b>Main</b></a>
-        </li>
-        <li class="nav-item d-inline mx-2">
-          <a class="nav-link text-success" href="{% url 'progress' %}"><b>Progress</b></a>
-        </li>
-        <li class="nav-item d-inline mx-2">
-          <a class="nav-link text-danger" href="{% url 'logout' %}"><b>Logout</b></a>
-        </li>
-{% endif %}
-      </ul>
-    </div>
-  </div>
-</nav>
+            .btn-language:hover {
+                background-color: #6c757d; /* สีพื้นหลังเมื่อชี้ */
+                color: white; /* สีข้อความเมื่อชี้ */
+            }
+        </style>
+        {% endblock %}
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light p-2" style="background-color: #ffc8dd; position: fixed; top: 0; width: 100%; z-index: 1000;">
+            <div class="container-fluid">
+                <a id="logo" class="nav-link text-dark" href="{% url 'homepage' %}" style="font-size: 25px; font-family: lafl0raFontBold; margin-right: 7%;">
+                    Healthy-Pig
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <button class="btn btn-language" data-reload="en">
+                    English
+                </button>
+                <button class="btn btn-language" style="margin-left: 1%;" data-reload="th">
+                    ภาษาไทย
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        {% if user.is_authenticated %}
+                        <li class="nav-item d-inline mx-2">
+                            <p id="navprofile" class="nav-link text-dark">I'm, {{ user.username }}</p>
+                        </li>
+                        <li class="nav-item d-inline mx-2">
+                            <a id="navmain" class="nav-link text-success" href="{% url 'mainpage' %}"><b>Main</b></a>
+                        </li>
+                        <li class="nav-item d-inline mx-2">
+                            <a id="navprogress" class="nav-link text-success" href="{% url 'progress' %}"><b>Progress</b></a>
+                        </li>
+                        <li class="nav-item d-inline mx-2">
+                            <a id="navlogout" class="nav-link text-danger" href="{% url 'logout' %}"><b>Logout</b></a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
-
-    <div class="container py-4">
-
-      {% block content %}
-      <div class=""></div>
-      {% endblock %}
-    </div>
-  </body>
+        <div class="container py-4">
+            {% block content %}
+            <div class=""></div>
+            {% endblock %}
+        </div>
+    </body>
 </html>

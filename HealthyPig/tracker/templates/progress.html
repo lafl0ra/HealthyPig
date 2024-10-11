@@ -31,6 +31,10 @@
         z-index: 1000; /* ทำให้ sidebar อยู่บนสุด */
     }
 
+    .sidebar-link {
+        cursor: pointer;
+    }
+
     .record-content {
         display: none; 
         background-color: aliceblue;
@@ -62,16 +66,16 @@
                 <div class="sidebar">
                     <ul class="list-group" style="font-family: lafl0raFontBold;">
                         <li class="list-group-item list-group-item-warning">
-                            <a href="#" class="sidebar-link" onclick="showContent('food')">Food Record</a>
+                            <a id="side1" class="sidebar-link" onclick="showContent('food')">Food Record</a>
                         </li>
                         <li class="list-group-item list-group-item-warning">
-                            <a href="#" class="sidebar-link" onclick="showContent('exercise')">Exercise Record</a>
+                            <a id="side2" class="sidebar-link" onclick="showContent('exercise')">Exercise Record</a>
                         </li>
                         <li class="list-group-item list-group-item-warning">
-                            <a href="#" class="sidebar-link" onclick="showContent('summary')">Summary Calories</a>
+                            <a id="side3" class="sidebar-link" onclick="showContent('summary')">Summary Calories</a>
                         </li>
                         <li class="list-group-item list-group-item-warning">
-                            <a href="#" class="sidebar-link" onclick="showContent('growth')">Weight Growth</a>
+                            <a id="side4" class="sidebar-link" onclick="showContent('growth')">Weight Growth</a>
                         </li>
                     </ul>
                 </div>
@@ -79,14 +83,14 @@
             <td style="padding-left: 10%;">
                 <div id="content">
                     <div id="food" class="record-content">
-                        <h3 style="font-family: lafl0raFontBold;"> Food Record </h3> <hr>
-                        <label for="datePicker">Select Date:</label>
+                        <h3 id="foodrec" style="font-family: lafl0raFontBold;"> Food Record </h3> <hr>
+                        <label id="datechoose" for="datePicker">Select Date :</label>
                         <input type="date" id="fooddatePicker" onchange="fetchDataForDate_Food()">
                         <div id="foodDataDisplay"></div> <!-- ตารางที่แสดงข้อมูลและสรุปผลแคลอรี่ที่ได้รับ (ส่งมาจาก javascript) -->
                     </div>
                     <div id="exercise" class="record-content">
-                        <h3 style="font-family: lafl0raFontBold;"> Exercise Record </h3> <hr>
-                        <label for="datePicker"1style="margin-top: 1%;" >Select Date:</label>
+                        <h3 id="exrec" style="font-family: lafl0raFontBold;"> Exercise Record </h3> <hr>
+                        <label id="datechoose2" for="datePicker" style="margin-top: 1%;" >Select Date:</label>
                         <input type="date" id="exerciseDatePicker" onchange="fetchDataForDate_Ex()">
                         <div id="exerciseDataDisplay"></div> <!-- แก้ id ที่นี่ -->
                         {% for record in ex_records %}
@@ -96,10 +100,10 @@
                         {% endfor %}
                     </div>
                     <div id="summary" class="record-content">
-                        <h3 style="font-family: lafl0raFontBold;">Summary Calories Consumed</h3> 
+                        <h3 id="sumrec" style="font-family: lafl0raFontBold;">Summary Calories Consumed</h3> 
                         <hr>
                         <div class="chart-container" style="width: 100%; height: 400px; position: relative;">
-                            <label for="monthPicker">Select Month:</label>
+                            <label id="monthchoose" for="monthPicker">Select Month and Year :</label>
                             <input type="month" id="monthPicker" onchange="fetchSummaryCalories()">
                             
                             <!-- Canvas for Bar Chart -->
@@ -109,12 +113,12 @@
                     <div id="growth" class="record-content" style="display: none;">
                         <div class="row">
                             <div class="col">
-                                <h3 style="font-family: lafl0raFontBold;">Weight Growth</h3> 
+                                <h3 id="weightrec" style="font-family: lafl0raFontBold;">Weight Growth</h3> 
                             </div>
                             <div class="col">
                                 <div style="background-color: lavender; border-radius: 25px; padding: 8px; border: 2px solid indigo; text-align: center; width: 200px; margin-left: auto;">
-                                    <a href="" style="color: black; text-decoration: underline;">
-                                        Edit Weight
+                                    <a id="editweight" href="" style="color: black; text-decoration: underline;">
+                                        Update Weight
                                     </a>
                                 </div>
                             </div>
@@ -122,7 +126,7 @@
                         <hr>
                         {% if latest_weight %}
                             <div class="weight-info">
-                                <p> <b> Latest Weight: </b> {{ latest_weight.weight }} kg ( recorded on  </b> {{ latest_weight.datetime_update }} )</p>
+                                <p id="lastweight"> <b> Latest Weight: </b> {{ latest_weight.weight }} kg ( recorded on  </b> {{ latest_weight.datetime_update }} )</p>
                             </div>
                         {% else %}
                             <p>No weight record found.</p>
@@ -177,9 +181,9 @@
         if (recordsForDate.length > 0) {
             var table = `<table style="margin-top: 2%">
                             <tr>
-                                <th style="background-color: pink; border: 1px solid black;">Menu</th>
-                                <th style="background-color: pink; border: 1px solid black;">Quantity</th>
-                                <th style="background-color: pink; border: 1px solid black;">Calories</th>
+                                <th id="foodrecmenu" style="background-color: pink; border: 1px solid black;">Menu</th>
+                                <th id="foodrecquantity" style="background-color: pink; border: 1px solid black;">Quantity</th>
+                                <th id="foodreckcal" style="background-color: pink; border: 1px solid black;">Calories</th>
                             </tr>`;
             recordsForDate.forEach(record => {
                 table += `<tr>
@@ -389,6 +393,86 @@
     }
     
 
+</script>
+{% comment %} for language {% endcomment %}
+<script>
+    var language = {
+        en: {
+            logo: "Healthy-Pig",
+            navprofile: "I'm, {{ user.username }}",
+            navmain: "<b>Main</b>",
+            navprogress: "<b>Progress</b>",
+            navlogout: "Logout",
+            side1: "Food Record",
+            side2: "Exercise Record",
+            side3: "Summary Calories",
+            side4: "Weight Growth",
+            foodrec: "Food Record",
+            exrec: "Exercise Record",
+            sumrec: "Summary Calories Consumed",
+            weightrec: "Weight Growth",
+            datechoose: "Select Date :", 
+            datechoose2: "Select Date :", 
+            monthchoose: "Select Month and Year :", 
+            lastweight: " <b> Latest Weight: </b> {{ latest_weight.weight }} kg ( recorded on  </b> {{ latest_weight.datetime_update }} )",
+            editweight: "Update Weight",
+        },
+        th: {
+            logo: "หมูแข็งแรง",
+            navprofile: "ฉันคือ {{ user.username }}",
+            navmain: "<b>หน้าหลัก</b>",
+            navprogress: "<b>ความคืบหน้า</b>",
+            navlogout: "ออกจากระบบ",
+            side1:"บันทึกอาหาร",
+            side2:"บันทึกการออกกำลังกาย",
+            side3:"สรุปแคลอรี่รวม",
+            side4:"การเปลี่ยนแปลงของน้ำหนัก",
+            foodrec: "บันทึกอาหารที่ทาน",
+            exrec: "บันทึกการออกกำลังกาย",
+            sumrec: "สรุปแคลอรี่ที่ได้รับ",
+            weightrec: "การเปลี่ยนแปลงของน้ำหนัก",
+            datechoose: "เลือกวัน :", 
+            datechoose2: "เลือกวัน :", 
+            monthchoose: "เลือกเดือนและปี :",
+            lastweight: " <b> น้ำหนักล่าสุด: </b> {{ latest_weight.weight }} กก. ( บันทึกเมื่อ  </b> {{ latest_weight.datetime_update }} )",
+            editweight: "อัพเดตน้ำหนัก"
+        },
+    };
+
+    // ฟังก์ชันเพื่อเปลี่ยนภาษา
+    function changeLanguage(lang) {
+        localStorage.setItem("preferredLanguage", lang);
+        document.getElementById("logo").innerText = language[lang].logo;
+        document.getElementById("navprofile").innerText = language[lang].navprofile;
+        document.getElementById("navmain").innerHTML = language[lang].navmain;
+        document.getElementById("navprogress").innerHTML = language[lang].navprogress;
+        document.getElementById("navlogout").innerHTML = language[lang].navlogout;
+        document.getElementById("side1").innerText = language[lang].side1;
+        document.getElementById("side2").innerText = language[lang].side2;
+        document.getElementById("side3").innerText = language[lang].side3;
+        document.getElementById("side4").innerText = language[lang].side4;
+        document.getElementById("foodrec").innerText = language[lang].foodrec;
+        document.getElementById("exrec").innerText = language[lang].exrec;
+        document.getElementById("sumrec").innerText = language[lang].sumrec;
+        document.getElementById("weightrec").innerText = language[lang].weightrec;
+        document.getElementById("datechoose").innerText = language[lang].datechoose;
+        document.getElementById("datechoose2").innerText = language[lang].datechoose2;
+        document.getElementById("monthchoose").innerText = language[lang].monthchoose;
+        document.getElementById("lastweight").innerHTML = language[lang].lastweight;
+        document.getElementById("editweight").innerText = language[lang].editweight;
+    }
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        const preferredLanguage = localStorage.getItem("preferredLanguage") || "en";
+        changeLanguage(preferredLanguage);
+    });
+
+    document.querySelectorAll("[data-reload]").forEach((button) => {
+        button.onclick = function () {
+            changeLanguage(this.getAttribute("data-reload"));
+            location.reload();
+        };
+    });
 </script>
 {% endblock %}
 

@@ -16,13 +16,14 @@ Food Detail
                 {% csrf_token %}
                 <div style="width: 50%;">
                     {% if food.description %}
-                    <p> <b> Description : </b> {{ food.description }} </p> 
+                    <p id="des"> <b> Description : </b> {{ food.description }}
+                    </p>
                     {% endif %}
                     {% if food.quantity_in_grams %}
-                    <p> <b> Quantity in grams : </b> {{ food.quantity_in_grams }} grams . </p>
+                    <p id="quantity"> <b> Quantity in grams : </b> {{ food.quantity_in_grams }} grams . </p>
                     {% endif %}
                     {% if food.ingredients.all %}
-                    <h3>Ingredients:</h3>
+                    <h3 id="ingredient">Ingredients:</h3>
                     <ul> 
                         {% for ingredient in food.ingredients.all %}
                         <li>{{ ingredient.name }}</li>
@@ -33,18 +34,18 @@ Food Detail
                         <tr>
                             <td>
                                 <tr>
-                                <b>Serve Amount:</b>
+                                <b id="amount">Serve Amount:</b>
                                 {{ form.amount }}
                                 <tr>
                             </td>
                         </tr>
                         <tr>
-                            <button type="button" class="btn btn-primary" style="margin-bottom: 10px; margin-top: 15%;" onclick="calculate()">calculate </button>
+                            <button id="calculate" type="button" class="btn btn-primary" style="margin-bottom: 10px; margin-top: 15%;" onclick="calculate()">Calculate </button>
                             <input style="width: 50%; margin-top: 2%;" id="resultInput" class="form-control bg-white border-info text-info" value="{{ food.calories }} kcal" readonly>
                         </tr>
                     </table>
                 </div>                
-                <button type="submit" class="btn btn-success w-20 mt-5">Save</button>
+                <button id="save" type="submit" class="btn btn-success w-20 mt-5">Save</button>
             </form>
         </div>
         <div class="col-sm">
@@ -87,5 +88,63 @@ Food Detail
         // แสดงผลใน input
         document.getElementById('resultInput').value = result;
     }
+</script>
+{% comment %} for language {% endcomment %}
+<script>
+    var language = {
+        en: {
+            logo: "Healthy-Pig",
+            navprofile: "I'm, {{ user.username }}",
+            navmain: "<b>Main</b>",
+            navprogress: "<b>Progress</b>",
+            navlogout: "Logout",
+            des: "<b>Description :</b> {{ food.description }}",
+            quantity: "<b> Quantity in grams : </b> {{ food.quantity_in_grams }} grams . ",
+            ingredient:"Ingredient.",
+            amount:"Serve Amount:",
+            calculate:"Calculate",
+            save:"Save",
+        },
+        th: {
+            logo: "หมูแข็งแรง",
+            navprofile: "ฉันคือ {{ user.username }}",
+            navmain: "<b>หน้าหลัก</b>",
+            navprogress: "<b>ความคืบหน้า</b>",
+            navlogout: "ออกจากระบบ",
+            des: "<b>คำอธิบาย :</b> {{ food.description }}",
+            quantity: "<b> ปริมาณ (กรัม) : </b> {{ food.quantity_in_grams }} grams ",
+            amount:"จำนวน:",
+            calculate:"คำนวณ",
+            save:"บันทึก",
+        },
+    };
+
+    // ฟังก์ชันเพื่อเปลี่ยนภาษา
+    function changeLanguage(lang) {
+        localStorage.setItem("preferredLanguage", lang);
+        document.getElementById("logo").innerText = language[lang].logo;
+        document.getElementById("navprofile").innerText = language[lang].navprofile;
+        document.getElementById("navmain").innerHTML = language[lang].navmain;
+        document.getElementById("navprogress").innerHTML = language[lang].navprogress;
+        document.getElementById("navlogout").innerHTML = language[lang].navlogout;
+        document.getElementById("des").innerHTML = language[lang].des;
+        document.getElementById("quantity").innerHTML = language[lang].quantity;
+        document.getElementById("amount").innerText = language[lang].amount;
+        document.getElementById("calculate").innerText = language[lang].calculate;
+        document.getElementById("save").innerText = language[lang].save;
+
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const preferredLanguage = localStorage.getItem("preferredLanguage") || "en";
+        changeLanguage(preferredLanguage);
+    });
+
+    document.querySelectorAll("[data-reload]").forEach((button) => {
+        button.onclick = function () {
+            changeLanguage(this.getAttribute("data-reload"));
+            location.reload();
+        };
+    });
 </script>
 {% endblock %}

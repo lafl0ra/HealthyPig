@@ -16,23 +16,23 @@ Exercise Detail
                 {% csrf_token %}
                 <div style="width: 60%;">
                     {% if exercise.description %}
-                    <p> <b> Description : </b> {{ exercise.description }} </p> 
+                    <p id="des"> <b> Description : </b> {{ exercise.description }} </p> 
                     {% endif %}
                     <table>
                         <tr>
                             <td>
-                                <b>Period of Time (minute) :</b>
+                                <b id="period">Period of Time (minute) :</b>
                                 {{ form.amount }}
                             </td>
                         </tr>
                         <tr>
                             <td style="width: 300px;">
-                            <button type="button" class="btn btn-danger" style="margin-bottom: 10px; margin-top: 15%;" onclick="calculate()">calculate </button>
+                            <button id="calculate" type="button" class="btn btn-danger" style="margin-bottom: 10px; margin-top: 15%;" onclick="calculate()">Calculate </button>
                             <input style="width: 50%; margin-top: 2%;" id="resultInput" class="form-control bg-white border-info text-info" value="{{ exercise.calories_burned_per_min }} kcal" readonly>
                             </td>
                         </tr>
                     </table>      
-                    <button type="submit" class="btn btn-success w-20 mt-5">Save</button>
+                    <button id="save" type="submit" class="btn btn-success w-20 mt-5">Save</button>
                 </div>
             </form>
         </div>
@@ -76,5 +76,59 @@ Exercise Detail
         // แสดงผลใน input
         document.getElementById('resultInput').value = result;
     }
+</script>
+<script>
+    var language = {
+        en: {
+            logo: "Healthy-Pig",
+            navprofile: "I'm, {{ user.username }}",
+            navmain: "<b>Main</b>",
+            navprogress: "<b>Progress</b>",
+            navlogout: "Logout",
+            des: " <b> Description : </b> {{ exercise.description }}",
+            period: "Period of Time (minute) :",
+            calculate: "Calculate",
+            save: "Save",
+        },
+        th: {
+            logo: "หมูแข็งแรง",
+            navprofile: "ฉันคือ {{ user.username }}",
+            navmain: "<b>หน้าหลัก</b>",
+            navprogress: "<b>ความคืบหน้า</b>",
+            navlogout: "ออกจากระบบ",
+            des: " <b> คำอธิบาย : </b> {{ exercise.description }}",
+            period: "ระยะเวลา (นาที) :",
+            calculate: "คำนวณ",
+            save: "บันทึก",
+        },
+    };
+
+    // ฟังก์ชันเพื่อเปลี่ยนภาษา
+    function changeLanguage(lang) {
+        localStorage.setItem("preferredLanguage", lang);
+        document.getElementById("logo").innerText = language[lang].logo;
+        document.getElementById("navprofile").innerText = language[lang].navprofile;
+        document.getElementById("navmain").innerHTML = language[lang].navmain;
+        document.getElementById("navprogress").innerHTML = language[lang].navprogress;
+        document.getElementById("navlogout").innerHTML = language[lang].navlogout;
+        document.getElementById("des").innerHTML = language[lang].des;
+        document.getElementById("period").innerText = language[lang].period;
+        document.getElementById("calculate").innerText = language[lang].calculate;
+        document.getElementById("save").innerText = language[lang].save;
+
+
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const preferredLanguage = localStorage.getItem("preferredLanguage") || "en";
+        changeLanguage(preferredLanguage);
+    });
+
+    document.querySelectorAll("[data-reload]").forEach((button) => {
+        button.onclick = function () {
+            changeLanguage(this.getAttribute("data-reload"));
+            location.reload();
+        };
+    });
 </script>
 {% endblock %}

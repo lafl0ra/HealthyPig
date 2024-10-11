@@ -7,17 +7,17 @@
 {% block content %}
   <div class="row justify-content-center" style="margin-top: 3%;">
     <div class="col-md-6" style="border-radius: 15px; background-color: rgba(245, 250, 255, 0.75); padding: 2%; margin-top: 2%; max-height: 80vh; overflow-y: auto;">
-      <h2 class="text-center" style="padding-top: 2%;">REGISTER</h2>
+      <h2 id="topic" class="text-center" style="padding-top: 2%;">REGISTER</h2>
       <form method="POST" action="{% url 'register' %}">
         {% csrf_token %}
         {{ form.password.errors }}
         <div class="mb-3">
-          <label for="username" class="form-label" style="margin-top: 3%;">Username</label>
+          <label id="username" for="username" class="form-label" style="margin-top: 3%;">Username</label>
             {{ form.username.errors }}
           {{ form.username }}
         </div>
         <div class="mb-3">
-          <label for="email" class="form-label" style="margin-top: 3%;">Email</label>
+          <label id="email" for="email" class="form-label" style="margin-top: 3%;">Email</label>
           {{ form.email.errors }}
           {{ form.email }}
         </div>
@@ -25,51 +25,51 @@
         <div class="mb-3" style="margin-top: 7%;">
           {% comment %} แสดง error ของ password ทั้งสอง {% endcomment %}
         {{ form.password2.errors }}
-          <label for="password1" class="form-label">Password</label>
+          <label id="password1" for="password1" class="form-label">Password</label>
           {{ form.password1 }}
         </div>
         <div class="mb-3">
-          <label for="password2" class="form-label" style="margin-top: 3%;">Confirm password</label>
+          <label id="password2" for="password2" class="form-label" style="margin-top: 3%;">Confirm password</label>
           
           {{ form.password2 }}
         </div>
         <br />
-        <h2 class="text-center" style="padding-top: 2%;">FILL YOUR INFORMATION</h2>
+        <h2 id="topic2" class="text-center" style="padding-top: 2%;">FILL YOUR INFORMATION</h2>
         <div class="mb-3">
-          <label for="birth_date" class="form-label" style="margin-top: 3%;">Birth Date</label>
+          <label id="birthdate" for="birth_date" class="form-label" style="margin-top: 3%;">Birth Date</label>
           {{ form.birth_date.errors }}
           {{ form.birth_date }}
         </div>
         <div class="mb-3">
-          <label for="gender" class="form-label" style="margin-top: 3%;">Gender (Biological Sex)</label>
+          <label id="gender" for="gender" class="form-label" style="margin-top: 3%;">Gender (Biological Sex)</label>
           {% comment %}ใส่ div form-control เพื่อความสวยงาม{% endcomment %}
           <div class="form-control">{{ form.gender }}</div>
         </div>
         <div class="mb-3">
-          <label for="height" class="form-label" style="margin-top: 3%;">Height</label>
+          <label id="height" for="height" class="form-label" style="margin-top: 3%;">Height</label>
           {{ form.height.errors }}
           {{ form.height }}
         </div>
         <div class="mb-3">
-          <label for="weight" class="form-label" style="margin-top: 3%;">Weight (kg)</label>
+          <label id="weight" for="weight" class="form-label" style="margin-top: 3%;">Weight (kg)</label>
           {{ form.weight.errors }}
           {{ form.weight }}
         </div>
         <div style="background-color: #ffeef0; border: 1px solid #ffb3b3; border-radius: 5px; padding: 10px; margin-bottom: 15px; margin-top: 8%;">
           <div class="mb-3">
-            <label for="goal_weight" class="form-label" style="font-weight: bold; color: #d63384; margin-bottom: 5px;">Goal Weight (kg)</label>
+            <label id="goalweight" for="goal_weight" class="form-label" style="font-weight: bold; color: #d63384; margin-bottom: 5px;">Goal Weight (kg)</label>
             {{ form.goal_weight.errors }}
             {{ form.goal_weight }}
           </div>
         </div>
         <div class="mb-3">
-          <label for="activity" class="form-label" style="margin-top: 3%;"> Activity Frequency  </label>
+          <label id="activity" for="activity" class="form-label" style="margin-top: 3%;"> Activity Frequency  </label>
           {% comment %}ใส่ div form-control เพื่อความสวยงาม{% endcomment %}
           <div class="form-control">{{ form.activity }}</div>
         </div>
         <div style="background-color: #ffeef0; border: 1px solid #ffb3b3; border-radius: 5px; padding: 10px; margin-bottom: 15px; margin-top: 8%;">
           <div class="mb-3">
-            <label id="goal_weight_per_week" class="form-label" style="font-weight: bold; color: #d63384; margin-bottom: 5px;">Weekly Weight Loss Goal</label>
+            <label id="weekgoal" id="goal_weight_per_week" class="form-label" style="font-weight: bold; color: #d63384; margin-bottom: 5px;">Weekly Weight Loss Goal</label>
             <div class="form-control"> {{ form.goal_weight_per_week }} </div>
           </div>
         </div>
@@ -87,4 +87,72 @@
       </form>
     </div>
   </div>
+  {% comment %} for language {% endcomment %}
+<script>
+  var language = {
+      en: {
+          logo: "Healthy-Pig",
+          topic: "REGISTER",
+          username: "Username",
+          email: "Email",
+          password1: "Password",
+          password2: "Confirm password",
+          topic2: "FILL YOUR INFORMATION",
+          birthdate: "Birth Date",
+          gender: "Gender (Biological Sex)",
+          height: "Height",
+          weight: "Weight (kg)",
+          goalweight: "Goal Weight (kg)",
+          activity: "Activity Frequency",
+          weekgoal: "Weekly Weight Loss Goal"
+      },
+      th: {
+          logo: "หมูแข็งแรง",
+          topic: "ลงทะเบียน",
+          email: "อีเมล",
+          username: "ชื่อผู้ใช้",
+          password1: "รหัสผ่าน",
+          password2: "ยืนยันรหัสผ่าน",
+          topic2: "ใส่ข้อมูลของคุณ",
+          birthdate: "วันเกิด",
+          gender: "เพศ (เพศทางกายภาพ)",
+          height: "ส่วนสูง",
+          weight: "น้ำหนัก (กก.)",
+          goalweight: "น้ำหนักเป้าหมาย (กก.)",
+          activity: "ความถี่ของการทำกิจกรรม",
+          weekgoal: "เป้าหมายน้ำหนักที่ลดต่อสัปดาห์"
+      },
+  };
+
+  // ฟังก์ชันเพื่อเปลี่ยนภาษา
+  function changeLanguage(lang) {
+    localStorage.setItem("preferredLanguage", lang);
+    document.getElementById("logo").innerText = language[lang].logo;
+    document.getElementById("topic").innerText = language[lang].topic;
+    document.getElementById("username").innerText = language[lang].username;
+    document.getElementById("email").innerText = language[lang].email;
+    document.getElementById("password1").innerText = language[lang].password1;
+    document.getElementById("password2").innerText = language[lang].password2;
+    document.getElementById("topic2").innerText = language[lang].topic2;
+    document.getElementById("birthdate").innerText = language[lang].birthdate;
+    document.getElementById("gender").innerText = language[lang].gender;
+    document.getElementById("height").innerText = language[lang].height;
+    document.getElementById("weight").innerText = language[lang].weight;
+    document.getElementById("goalweight").innerText = language[lang].goalweight;
+    document.getElementById("activity").innerText = language[lang].activity;
+    document.getElementById("weekgoal").innerText = language[lang].weekgoal;
+}
+
+  document.addEventListener("DOMContentLoaded", function () {
+      const preferredLanguage = localStorage.getItem("preferredLanguage") || "en";
+      changeLanguage(preferredLanguage);
+  });
+
+  document.querySelectorAll("[data-reload]").forEach((button) => {
+      button.onclick = function () {
+          changeLanguage(this.getAttribute("data-reload"));
+          location.reload();
+      };
+  });
+</script>
 {% endblock %}
