@@ -32,7 +32,7 @@ class FoodType(models.Model):
 class Food(models.Model):
     name = models.CharField(max_length=150, null=False)
     calories = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.0)
-    description = models.TextField()
+    description = models.TextField(null=True)
     quantity_in_grams = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     ingredients = models.ManyToManyField('self', symmetrical=False, related_name='included_in')
     # staff = models.ForeignKey(User, on_delete=models.CASCADE) ไม่รู้ว่าต้องมีไหม หรือใช้รวมกับ user ด้านล่างได้เลย
@@ -40,7 +40,7 @@ class Food(models.Model):
     food_type = models.ManyToManyField(FoodType)
 
 class FoodRecord(models.Model):
-    foodrecord = models.ForeignKey(Food, on_delete=models.CASCADE, null=False)
+    food = models.ForeignKey(Food, on_delete=models.CASCADE, null=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     datetime_record = models.DateTimeField(auto_now_add=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.0)
@@ -55,6 +55,6 @@ class Exercise(models.Model): # EXERCISE ห้ามลบ แก้ไขก�
 class ExerciseRecord(models.Model):
     exercise = models.ForeignKey(Exercise, on_delete=models.PROTECT, null=False) # ห้ามลบ exercise !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    datetime_record = models.DateTimeField(auto_now_add=True) # auto_now_add จะบันทึกเวลาที่สร้างวัตถุครั้งแรก
-    amount= models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.0)
+    datetime_record = models.DateTimeField(auto_now_add=True, null=False) # auto_now_add จะบันทึกเวลาที่สร้างวัตถุครั้งแรก
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.0)
     sum_calories = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.0)

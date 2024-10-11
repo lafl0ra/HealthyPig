@@ -111,11 +111,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+USE_TZ = True  # ต้องเปิดใช้งาน
+TIME_ZONE = 'Asia/Bangkok'  # ตั้งเวลาให้เป็น Bangkok
 
 USE_I18N = True
 
-USE_TZ = True
+# USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)

@@ -1,20 +1,24 @@
 @font-face {
-    font-family: lafl0raFont;
-    /* src: url('/static/lafl0ra.ttf'); */
-    src: url('/static/lafl0ra.ttf');
-    
+  font-family: 'lafl0raFont';
+  src: url('/static/Mali-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'lafl0raFontBold';
+  src: url('/static/Mali-Bold.ttf');
+  /* src: url('/static/lafl0ra.ttf'); */
 }
 
 body {
-  font-family: lafl0raFont;
+  font-family: 'lafl0raFont';
   background-color: #f5fcff;
   background-image: url('/static/background2.jpg');
   background-size: cover; /* Makes the background image cover the entire area */
   background-position: center; /* Centers the background image */
   background-repeat: no-repeat; /* Prevents the image from repeating */
   background-attachment: fixed; /* Prevents the background from moving when scrolling */
-}
 
+}
 
 .button {
   display: inline-block;

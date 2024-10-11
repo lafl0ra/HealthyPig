@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+Exercise Detail
+{% endblock %}
+
+{% block content %}
+
+<div style="margin-top: 8%;" class="container">
+    <div class="row">
+        <div class="col-sm">
+            <h1 style="margin-top: 2%; font-size: 56px; color: darkblue;">{{ exercise.name }}</h1>
+            <form style="margin-top: 5%;" method="POST"> {% comment %} ส่งฟอร์มไปยังเซิร์ฟเวอร์ด้วย POST {% endcomment %}
+                {% csrf_token %}
+                <div style="width: 60%;">
+                    {% if exercise.description %}
+                    <p> <b> Description : </b> {{ exercise.description }} </p> 
+                    {% endif %}
+                    <table>
+                        <tr>
+                            <td>
+                                <b>Period of Time (minute) :</b>
+                                {{ form.amount }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 300px;">
+                            <button type="button" class="btn btn-danger" style="margin-bottom: 10px; margin-top: 15%;" onclick="calculate()">calculate </button>
+                            <input style="width: 50%; margin-top: 2%;" id="resultInput" class="form-control bg-white border-info text-info" value="{{ exercise.calories_burned_per_min }} kcal" readonly>
+                            </td>
+                        </tr>
+                    </table>      
+                    <button type="submit" class="btn btn-success w-20 mt-5">Save</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm">
+            {% comment %} แสดงรูปภาพแบบสุ่ม {% endcomment %}
+            <div style="margin-top: 5%;">
+                <img style="width: 600px;" id="randomImage" alt="Random Image">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // สร้างลิสต์ของรูปภาพ
+    const images = [
+        '{% static "exercisedetailrandom (1).jpg" %}',
+        '{% static "exercisedetailrandom (2).jpg" %}',
+        '{% static "exercisedetailrandom (3).jpg" %}',
+        '{% static "exercisedetailrandom (4).jpg" %}',
+        '{% static "exercisedetailrandom (5).jpg" %}'
+    ];
+
+    // ฟังก์ชันเพื่อสุ่มเลือกรูปภาพ
+    function getRandomImage() {
+        const randomIndex = Math.floor(Math.random() * images.length);
+        return images[randomIndex];
+    }
+
+    // แสดงรูปภาพแบบสุ่มเมื่อโหลดหน้า
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('randomImage').src = getRandomImage();
+    });
+
+    // ฟังก์ชันสำหรับคำนวณแคลอรี่
+    function calculate() {
+        // ดึงค่าจาก form.amount
+        const amount = parseFloat(document.querySelector('[name="amount"]').value); // เปลี่ยน 'amount' เป็นชื่อฟิลด์จริงๆ ของคุณ
+        // คำนวณค่า (ในที่นี้คุณสามารถปรับให้เป็นการคำนวณที่คุณต้องการ)
+        const cal = parseFloat({{ exercise.calories_burned_per_min }}); // Ensure exercise.calories is treated as a float
+        const result = (amount * cal).toFixed(2) + " kcal"; // ตัวอย่างการคำนวณและจัดรูปแบบเป็น 2 ตำแหน่งทศนิยม
+        
+        // แสดงผลใน input
+        document.getElementById('resultInput').value = result;
+    }
+</script>
+{% endblock %}

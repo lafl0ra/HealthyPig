@@ -181,61 +181,59 @@ Main Page
 
 </style>
 <div>
-<div class="col-md-6" style="border-radius: 50px; background-color: #faedcb; padding: 2%; margin-top: 6%; margin-bottom: 2%; width: 90%; border: 2px solid #000; padding-bottom: 10%;">
+<div class="col-md-6" style="border-radius: 50px; background-color: #faedcb; padding: 2%; margin-top: 10%; margin-bottom: 2%; width: 90%; border: 2px solid #000; padding-bottom: 10%;">
     <h1>
         Hello {{ user.username }}
     </h1>
     <p style="margin-bottom: 8%;">
         This is your report for today.
     </p>
-    <table style="width: 100%; height: 300px; margin: 0 auto;"> <tr>
-        <td colspan="2" style="text-align: center; width: 49%%;"> <div class="container">
-            <div class="pie" style="--p:90; --c:#cdb4db; --w: 400px;"> 
-                <p style="font-size: 18px;"> today </p>
-                {% comment %} เดี๋ยวแก้ {% endcomment %}
-                <p style="font-size: 90px;">90****</p>
-                <p style="font-size: 18px;">
-                    kcal left from 
-                    <span class="text-danger">{{ user_profile.TDEE }}</span> 
-                    kcal.
-                </p>
-        </td>
-        <td style="width: 2%%;"></td>
-        <td style="text-align: center; width: 49%; margin-left: 2%;" >
-            <h3 style="margin-bottom: 5%;">
-                Calories consumed from food
-            </h3>
-            <table style="margin: 0 auto; width: 50%;">
-                <tr>
-                    <td style="width: 30%; vertical-align: top;">
-                        <img src="/static/mainpage_1.png" alt="Food" width="50">
-                    </td>
-                    <td style="width: 30%; vertical-align: bottom;">
-                        <p class="text-danger" style="font-size: 40px;"> 0 </p>
-                    </td>
-                    <td style="width: 30%; vertical-align: bottom;">
-                        <p class="text-secondary" style="font-size: 40px"> kcal. </p>
-                    </td>
-                </tr>
-            </table>
-            <h3 style="margin-top: 10%; margin-bottom: 5%;">
-                Calories burned from exercise
-            </h3>
-            <table style="margin: 0 auto; width: 50%;">
-                <tr>
-                    <td style="width: 30%; vertical-align: top;">
-                        <img src="/static/mainpage_2.png" alt="exercise" width="50">
-                    </td>
-                    <td style="width: 30%; vertical-align: bottom;">
-                        <p class="text-success" style="font-size: 40px;"> 0 </p>
-                    </td>
-                    <td style="width: 30%; vertical-align: bottom;">
-                        <p class="text-secondary" style="font-size: 40px"> kcal. </p>
-                    </td>
-                </tr>
-            </table>
-        </td>
-      </tr>
+    <table style="width: 100%; height: 300px; margin: 0 auto;"> 
+        <tr>
+            <td colspan="2" style="text-align: center; width: 49%;"> <div class="container">
+                <div class="pie" style="--p: {{ percentkcal }} ; --c:#cdb4db; --w: 400px;"> 
+                    <p style="font-size: 18px;"> today </p>
+                    {% comment %} เดี๋ยวแก้ {% endcomment %}
+                    <p style="font-size: 250%;"> {{ sumkcal }} </p>
+                    <p style="font-size: 18px;">
+                        kcal from
+                        <span class="text-danger">{{ user_profile.TDEE }}</span> 
+                        kcal goal
+                    </p>
+                    <p style="font-size: 18px; color: #6c757d">
+                        ( {{ percentkcal|floatformat:0 }} % )
+                    </p>
+            </td>
+            <td style="width: 2%;"></td>
+            <td style="text-align: center; width: 49%; margin-left: 2%;" >
+                <h3 style="margin-bottom: 5%;">
+                    Calories consumed from food
+                </h3>
+                <table style="margin: 0 auto; width: 50%;">
+                    <tr>
+                        <td style="width: 30%; vertical-align: top;">
+                            <img src="/static/mainpage_1.png" alt="Food" width="40">
+                        </td>
+                        <td style="width: 70%; vertical-align: bottom;">
+                            <p class="text-danger" style="font-size: 30px;"> {{ today_food }} kcal </p>
+                        </td>
+                    </tr>
+                </table>
+                <h3 style="margin-top: 5%; margin-bottom: 5%;">
+                    Calories burned from exercise
+                </h3>
+                <table style="margin: 0 auto; width: 50%;">
+                    <tr>
+                        <td style="width: 30%; vertical-align: top;">
+                            <img src="/static/mainpage_2.png" alt="exercise" width="40">
+                        </td>
+                        <td style="width: 70%; vertical-align: bottom;">
+                            <p class="text-success" style="font-size: 30px;"> {{ today_ex }} kcal</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
     </table>
 </div>
 <div class="col-md-6" style="border-radius: 50px; background-color: #c6def1 ; padding: 2%; margin-top: 6%; margin-bottom: 2%; width: 90%; border: 2px solid #000; padding-bottom: 7%;" >
@@ -247,10 +245,9 @@ Main Page
         <td style="text-align: center; width: 49%; margin-left: 2%; padding: 15px; border-radius: 15px;">
             <form method="GET" action="{% url 'mainpage' %}">
                 <input class="input-search" type="text" name="search" placeholder="Search Menu/Ingredient">
-                <button class="button-search" type="submit">Search</button>
-                <a class="button-add-booking" href="#">Add New Menu</a>
+                <input class="button-search" type="submit" value="Search">
+                <a class="button-add-booking">Add New Menu</a>
             </form>
-            
             
             <div style="overflow-x: hidden; overflow-y: auto; max-height: 400px; width: 100%; margin-top: 2.5%;">
                 <table class="styled-table">
@@ -261,6 +258,7 @@ Main Page
                         <th>Description</th>
                         <th>Quantity in grams</th>
                         <th>Owner</th>
+                        <th></th>
                     </tr>
                     <tbody>
                         {% for food in foods %}
@@ -271,6 +269,14 @@ Main Page
                             <td> {{ food.description }} </td>
                             <td> {{ food.quantity_in_grams }} g . </td>
                             <td> {{ food.user.username}} </td>
+                            <td>
+                                <div style="background-color: lavender; border-radius: 25px; padding: 8px; border: 2px solid indigo; text-align: center;">
+                                    {% comment %} เดะมาแก้ {% endcomment %}
+                                    <a href="{% url 'fooddetail' food.id %}" style="color: black; text-decoration: underline;">
+                                        Choose
+                                    </a>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -298,6 +304,7 @@ Main Page
                         <th>Calories (Minute) </th>
                         <th>Calories (Hour) </th>
                         <th>Description</th>
+                        <th></th>
                     </tr>
                     <tbody>
                         {% for exercise in exercises %}
@@ -307,6 +314,15 @@ Main Page
                             <td> {{ exercise.calories_burned_per_min }} kcal  </td>
                             <td style="color: darkblue;"> {{ exercise.calories_burned_per_hour }} kcal </td>
                             <td> {{ exercise.description }} </td>
+                            <td>
+                                <div style="background-color: lavender; border-radius: 25px; padding: 8px; border: 2px solid indigo; text-align: center;">
+                                    {% comment %} เดะมาแก้ {% endcomment %}
+                                    <a href="{% url 'exercisedetail' exercise.id %}" style="color: black; text-decoration: underline;">
+                                        Choose
+                                    </a>
+                                </div>
+                            </td>
+                            
                         </tr>
                         {% endfor %}
                     </tbody>

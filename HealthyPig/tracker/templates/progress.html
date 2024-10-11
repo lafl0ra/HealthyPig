@@ -1,0 +1,394 @@
+{% extends 'base.html' %} 
+{% block title %} Progress {% endblock %}
+{% block style %} 
+<style>
+    body {
+        font-family: 'lafl0raFont';
+    }
+    table {
+        width: 100%; /* ตารางกว้างเต็มที่ */
+        border-collapse: collapse; /* รวมกรอบ */
+        margin-top: 8px; /* ระยะห่างจากเนื้อหา */
+    }
+
+    th, td {
+        padding: 10px; /* ระยะห่างภายในเซลล์ */
+        text-align: left; /* จัดแนวซ้าย */
+    }
+
+    th {
+        background-color: #f2f2f2; /* สีพื้นหลังของหัวข้อ */
+    }
+
+    .sidebar {
+        position: fixed; /* ทำให้ 
+         คงที่ */
+        top: 13%; /* ระยะห่างจากด้านบน */
+        left: 0; /* ระยะห่างจากด้านซ้าย */
+        width: 250px; /* กำหนดความกว้าง */
+        height: auto; /* ให้ความสูงอัตโนมัติ */
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* เพื่อให้มีเงา */
+        z-index: 1000; /* ทำให้ sidebar อยู่บนสุด */
+    }
+
+    .record-content {
+        display: none; 
+        background-color: aliceblue;
+        padding: 5%; 
+        border-radius: 15px; 
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        max-height: 700px;
+        overflow-y: auto;
+        margin-top: 4%; /* Adjust this value to move it up */
+    }
+    .chart-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    #caloriesChart {
+        max-width: 100%;
+        height: 300px; /* ลดขนาดความสูงของกราฟ */
+    }
+    
+</style> 
+{% endblock %}
+{% block content %}
+    <table>
+        <tr>
+            <td>
+                <div class="sidebar">
+                    <ul class="list-group" style="font-family: lafl0raFontBold;">
+                        <li class="list-group-item list-group-item-warning">
+                            <a href="#" class="sidebar-link" onclick="showContent('food')">Food Record</a>
+                        </li>
+                        <li class="list-group-item list-group-item-warning">
+                            <a href="#" class="sidebar-link" onclick="showContent('exercise')">Exercise Record</a>
+                        </li>
+                        <li class="list-group-item list-group-item-warning">
+                            <a href="#" class="sidebar-link" onclick="showContent('summary')">Summary Calories</a>
+                        </li>
+                        <li class="list-group-item list-group-item-warning">
+                            <a href="#" class="sidebar-link" onclick="showContent('growth')">Weight Growth</a>
+                        </li>
+                    </ul>
+                </div>
+            </td>
+            <td style="padding-left: 10%;">
+                <div id="content">
+                    <div id="food" class="record-content">
+                        <h3 style="font-family: lafl0raFontBold;"> Food Record </h3> <hr>
+                        <label for="datePicker">Select Date:</label>
+                        <input type="date" id="fooddatePicker" onchange="fetchDataForDate_Food()">
+                        <div id="foodDataDisplay"></div> <!-- ตารางที่แสดงข้อมูลและสรุปผลแคลอรี่ที่ได้รับ (ส่งมาจาก javascript) -->
+                    </div>
+                    <div id="exercise" class="record-content">
+                        <h3 style="font-family: lafl0raFontBold;"> Exercise Record </h3> <hr>
+                        <label for="datePicker"1style="margin-top: 1%;" >Select Date:</label>
+                        <input type="date" id="exerciseDatePicker" onchange="fetchDataForDate_Ex()">
+                        <div id="exerciseDataDisplay"></div> <!-- แก้ id ที่นี่ -->
+                        {% for record in ex_records %}
+                            <div class="ex-box" data-date="{{ record.datetime_record|date:'Y-m-d' }}">
+                                <h4>{{ record.exercise_name }}</h4>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div id="summary" class="record-content">
+                        <h3 style="font-family: lafl0raFontBold;">Summary Calories Consumed</h3> 
+                        <hr>
+                        <div class="chart-container" style="width: 100%; height: 400px; position: relative;">
+                            <label for="monthPicker">Select Month:</label>
+                            <input type="month" id="monthPicker" onchange="fetchSummaryCalories()">
+                            
+                            <!-- Canvas for Bar Chart -->
+                            <canvas id="caloriesChart" style="max-width: 100%; max-height: 300px;"></canvas>
+                        </div>
+                    </div>
+                    <div id="growth" class="record-content" style="display: none;">
+                        <div class="row">
+                            <div class="col">
+                                <h3 style="font-family: lafl0raFontBold;">Weight Growth</h3> 
+                            </div>
+                            <div class="col">
+                                <div style="background-color: lavender; border-radius: 25px; padding: 8px; border: 2px solid indigo; text-align: center; width: 200px; margin-left: auto;">
+                                    <a href="" style="color: black; text-decoration: underline;">
+                                        Edit Weight
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        {% if latest_weight %}
+                            <div class="weight-info">
+                                <p> <b> Latest Weight: </b> {{ latest_weight.weight }} kg ( recorded on  </b> {{ latest_weight.datetime_update }} )</p>
+                            </div>
+                        {% else %}
+                            <p>No weight record found.</p>
+                        {% endif %}
+                        <div class="chart-container" style="width: 100%; height: 400px; position: relative;">
+                            <canvas id="weightChart" style="max-width: 100%; height: 300px;"></canvas>
+                        </div>
+                        
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+<script>
+    {% comment %} `showContent(type)` มีหน้าที่รับผิดชอบในการสลับการมองเห็นส่วนเนื้อหาต่างๆ ตามการเลือกของผู้ใช้ {% endcomment %}
+    function showContent(type) {
+        // Hide all contents first
+        var contents = document.getElementsByClassName('record-content');
+        for (var i = 0; i < contents.length; i++) {
+            contents[i].style.display = 'none';
+        }
+
+        // Show the selected content
+        document.getElementById(type).style.display = 'block';
+
+        // If showing the weight growth section, fetch the data for the chart
+        if (type === 'growth') {
+            fetchWeightGrowth();
+        }
+    }
+
+    function fetchDataForDate_Food() {
+        var selectedDate = document.getElementById('fooddatePicker').value;
+        var dataDisplay = document.getElementById('foodDataDisplay');
+
+    
+        // Create a variable to hold food records from Django
+        var foodRecords = [
+            {% for record in food_records %}
+            { date: '{{ record.datetime_record|date:"Y-m-d" }}', food_name: '{{ record.food.name }}', quantity: '{{ record.amount }}', calories: parseFloat('{{ record.sum_calories }}') },
+            {% endfor %}
+        ];
+    
+        // Filter records for the selected date
+        var recordsForDate = foodRecords.filter(record => record.date === selectedDate);
+    
+        // Calculate the sum of calories for the selected date
+        var totalCalories = recordsForDate.reduce((sum, record) => sum + record.calories, 0);
+    
+        // Create table header and rows based on the filtered records
+        if (recordsForDate.length > 0) {
+            var table = `<table style="margin-top: 2%">
+                            <tr>
+                                <th style="background-color: pink; border: 1px solid black;">Menu</th>
+                                <th style="background-color: pink; border: 1px solid black;">Quantity</th>
+                                <th style="background-color: pink; border: 1px solid black;">Calories</th>
+                            </tr>`;
+            recordsForDate.forEach(record => {
+                table += `<tr>
+                            <td style="border: 1px solid black;">${record.food_name}</td>
+                            <td style="border: 1px solid black;">${parseInt(record.quantity)}</td>
+                            <td style="border: 1px solid black;">${record.calories} kcal</td>
+                          </tr>`;
+            });
+            table += `</table>`;
+            dataDisplay.innerHTML = `${table}`;
+            
+            // Display total calories
+            dataDisplay.innerHTML += `<h5 style="margin-top: 2%"><strong>Total Calories Consumed:</strong> ${totalCalories.toFixed(2)} Kcal</h5>`;
+        } else {
+            dataDisplay.innerHTML = `<h4 style="margin-top: 10px">No records found for ${selectedDate}</h4>`;
+        }
+    
+        dataDisplay.style.display = 'block'; // Show the data display
+    }
+
+    function fetchDataForDate_Ex() {
+        var selectedDate = document.getElementById('exerciseDatePicker').value;
+        var dataDisplay = document.getElementById('exerciseDataDisplay');
+    
+        // ตรวจสอบวันที่ที่เลือก
+        console.log(selectedDate);
+        
+        var exRecords = [
+            {% for record in ex_records %}
+            { date: '{{ record.datetime_record|date:"Y-m-d" }}', ex_name: '{{ record.exercise.name }}', quantity: '{{ record.amount }}', calories: parseFloat('{{ record.sum_calories }}') },
+            {% endfor %}
+        ];
+    
+        console.log(exRecords); // ตรวจสอบข้อมูลที่ได้จาก Django
+    
+        var recordsForDate = exRecords.filter(record => record.date === selectedDate);
+        var totalCalories = recordsForDate.reduce((sum, record) => sum + record.calories, 0);
+    
+        if (recordsForDate.length > 0) {
+            var table = `<table style="margin-top: 2%">
+                            <tr>
+                                <th style="background-color: pink; border: 1px solid black;">Exercise</th>
+                                <th style="background-color: pink; border: 1px solid black;">Quantity</th>
+                                <th style="background-color: pink; border: 1px solid black;">Calories</th>
+                            </tr>`;
+            recordsForDate.forEach(record => {
+                table += `<tr>
+                            <td style="border: 1px solid black;">${record.ex_name}</td>
+                            <td style="border: 1px solid black;">${parseInt(record.quantity)}</td>
+                            <td style="border: 1px solid black;">${record.calories} kcal</td>
+                          </tr>`;
+            });
+            table += `</table>`;
+            dataDisplay.innerHTML = `${table}`;
+            dataDisplay.innerHTML += `<h5 style="margin-top: 2%"><strong>Total Burned Calories:</strong> ${totalCalories.toFixed(2)} Kcal</h5>`;
+        } else {
+            dataDisplay.innerHTML = `<h4 style="margin-top: 10px">No records found for ${selectedDate}</h4>`;
+        }
+        
+        dataDisplay.style.display = 'block'; 
+    }
+
+    function fetchSummaryCalories() {
+        var selectedMonth = document.getElementById('monthPicker').value;
+        var chartCanvas = document.getElementById('caloriesChart').getContext('2d');
+    
+        // ข้อมูลจาก Django หรือ mock data
+        var calorieRecords = [
+            {% for record in calorie_summary %}
+            { date: '{{ record.date|date:"Y-m-d" }}', calories: parseFloat('{{ record.total_calories }}') },
+            {% endfor %}
+        ];
+    
+        // กรองข้อมูลเฉพาะเดือนที่เลือก
+        var recordsForMonth = calorieRecords.filter(record => record.date.startsWith(selectedMonth));
+    
+        // เรียงลำดับข้อมูลวันที่
+        recordsForMonth.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+        // ดึงวันที่และแคลอรี่สำหรับแสดงในกราฟ
+        var dates = recordsForMonth.map(record => record.date);
+        var calories = recordsForMonth.map(record => record.calories);
+    
+        // ตรวจสอบการทำลายกราฟเก่าหรือไม่
+        if (window.caloriesChartInstance) {
+            // อัปเดตข้อมูลในกราฟแทนการสร้างใหม่
+            window.caloriesChartInstance.data.labels = dates;
+            window.caloriesChartInstance.data.datasets[0].data = calories;
+            window.caloriesChartInstance.update();  // อัปเดตกราฟ
+        } else {
+            // สร้างกราฟใหม่ถ้ายังไม่มี
+            window.caloriesChartInstance = new Chart(chartCanvas, {
+                type: 'bar',
+                data: {
+                    labels: dates, // X-axis (วัน)
+                    datasets: [{
+                        label: 'Calories',
+                        data: calories, // Y-axis (แคลอรี่แต่ละวัน)
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,  // ปิดการรักษาอัตราส่วน
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0 // แสดงเป็นจำนวนเต็ม
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Calorie Summary for ${selectedMonth}` // แสดงชื่อกราฟตามเดือนที่เลือก
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    // แสดงค่าแคลอรี่เป็นจำนวนเต็ม
+                                    let value = Math.round(context.raw);
+                                    return `Calories: ${value}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+    function fetchWeightGrowth() {
+        var chartCanvas = document.getElementById('weightChart').getContext('2d');
+    
+        // Weight records from Django
+        var weightRecords = [
+            {% for record in weight_data %}
+            { date: '{{ record.datetime_update|date:"Y-m-d" }}', weight: parseFloat('{{ record.weight }}') },
+            {% endfor %}
+        ];
+    
+        // Sort records by date
+        weightRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+        // Create an index for the x-axis
+        var indices = weightRecords.map((record, index) => index + 1); // Start index from 1
+        var weights = weightRecords.map(record => record.weight);
+    
+        // Check if the chart instance exists
+        if (window.weightChartInstance) {
+            // Update the existing chart
+            window.weightChartInstance.data.labels = indices;
+            window.weightChartInstance.data.datasets[0].data = weights;
+            window.weightChartInstance.update();  // Update the chart
+        } else {
+            // Create a new chart if it doesn't exist
+            window.weightChartInstance = new Chart(chartCanvas, {
+                type: 'line',
+                data: {
+                    labels: indices, // X-axis (instances)
+                    datasets: [{
+                        label: 'Weight (kg)',
+                        data: weights, // Y-axis (weights)
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,  // Disable maintaining aspect ratio
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Weight (kg)' // Y-axis label
+                            },
+                            ticks: {
+                                precision: 0 // Display as integer
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Instance' // X-axis label updated
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Weight Growth' // Chart title
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Weight: ${Math.round(context.raw)} kg`; // Display weight rounded
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+    
+
+</script>
+{% endblock %}
+
