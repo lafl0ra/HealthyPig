@@ -6,11 +6,15 @@ from django.core.exceptions import PermissionDenied
 from django import views
 from django.db.models import F, Q, Sum
 from django.contrib.auth import logout, login
-from tracker.forms import FoodRecordForm, ExerciseRecordForm
+from tracker.forms import FoodRecordForm, ExerciseRecordForm, MenuForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from .models import UserProfile, Food, Exercise, FoodRecord, ExerciseRecord, User_Info_Record
+from .models import UserProfile, Food, Exercise, FoodRecord, ExerciseRecord, User_Info_Record, User
 from django.utils import timezone
 from django.db.models.functions import TruncDate
+from django.contrib.auth import get_user_model
+from rest_framework.response import Response
+from rest_framework import status
+from django.db import transaction
 
 # exercise/food ห้ามลบ เพิ่มกับแก้ได้อย่างเดียว
 
@@ -99,6 +103,7 @@ class FoodDetailListView(views.View):
         form = FoodRecordForm(instance=food)  # Prepopulate the form with the food instance
         return render(request, 'fooddetail.html', {'form': form, 'food': food})
 
+    @transaction.atomic
     def post(self, request, pk):  # รับ pk สำหรับ food
         form = FoodRecordForm(request.POST)
         
@@ -132,36 +137,62 @@ class ExerciseDetailListView(views.View):
         form = ExerciseRecordForm(instance=exercise)  # Prepopulate the form with the exercise instance
         return render(request, 'exercisedetail.html', {'form': form, 'exercise': exercise})
 
-    def post(self, request, pk):  # รับ pk สำหรับ exercise
-        form = ExerciseRecordForm(request.POST)
-        
+    @transaction.atomic
+    def post(self, request, pk):  # รับ pk สำหรับ food
+        form = FoodRecordForm(request.POST)
+
         if form.is_valid():
-            amount = form.cleaned_data['amount']  # เข้าถึงข้อมูลที่ผ่านการตรวจสอบแล้ว
-            exercise = get_object_or_404(Exercise, pk=pk)  # ดึง Exercise object ตาม pk
-            user = request.user  # ดึง user จาก request
-            
-            # คำนวณแคลอรี่รวมจากการออกกำลังกาย
-            sum_calories = amount * exercise.calories_burned_per_min  # คำนวณแคลอรี่ที่เผาผลาาญ
-            
-            # สร้าง ExerciseRecord ใหม่
-            ex_record = ExerciseRecord(
-                exercise=exercise,
-                user=user,
-                amount=amount,
-                sum_calories=sum_calories
-            )
-            ex_record.save()  # บันทึกข้อมูล
+            try:
+                amount = form.cleaned_data['amount']  # เข้าถึงข้อมูลที่ผ่านการตรวจสอบแล้ว
+                food = get_object_or_404(Food, pk=pk)  # ดึง Food object ตาม pk
+                user = request.user  # ดึง user จาก request
 
-            # ส่งกลับไปที่หน้า mainpage โดยส่ง ID ไปด้วย
-            return redirect('mainpage')  # ส่ง ID ของผู้ใช้กลับไปด้วย
+                # คำนวณแคลอรี่รวมจากปริมาณอาหาร
+                sum_calories = amount * food.calories  # คำนวณแคลอรี่ที่ได้รับ
 
-        # ถ้าฟอร์มไม่ถูกต้อง ส่งกลับไปยังหน้า exercise detail
-        exercise = get_object_or_404(Exercise, pk=pk)  # ดึง Exercise object ตาม pk
-        return render(request, 'Exercisedetail.html', {'form': form, 'exercise': exercise})
+                # สร้าง FoodRecord ใหม่
+                food_record = FoodRecord(
+                    food=food,
+                    user=user,
+                    amount=amount,
+                    sum_calories=sum_calories
+                )
+                food_record.save()  # บันทึกข้อมูล
+
+                # ส่งกลับไปที่หน้า mainpage โดยส่ง ID ไปด้วย
+                return redirect('mainpage')
+
+            except Exception as e:
+                # หากมีข้อผิดพลาด จะ rollback การเปลี่ยนแปลงทั้งหมด
+                transaction.set_rollback(True)
+                print(f"Error: {e}")  # สำหรับการดีบัก (ควรใช้ logging ในโปรเจคจริง)
+
+        # ถ้าฟอร์มไม่ถูกต้อง ส่งกลับไปยังหน้า food detail
+        food = get_object_or_404(Food, pk=pk)  # ดึง Food object ตาม pk
+        return render(request, 'fooddetail.html', {'form': form, 'food': food})
 
 class ProgressOverviewView(views.View):
-    def get(self, request):
-        user = request.user  # Get the logged-in user
+    def get(self, request, pk):
+        # Get the current user
+        user = request.user
+        user_id = request.GET.get('user_id')
+
+        # If the logged-in user is a staff member, get the user by pk
+        # if user.is_staff:
+        #     User = get_user_model()  
+        #     user = get_object_or_404(User, pk=pk) 
+        
+        if user.is_staff:
+            user = get_object_or_404(User, pk=pk)
+            print(user.username)
+            # user = get_object_or_404(User, pk=user_id)
+        else:
+            # Default to the logged-in user
+            print(user.id)
+            user = request.user
+        
+        userpro = UserProfile.objects.get(user=user)
+        
         food_records = FoodRecord.objects.filter(user=request.user)  # แก้ไขให้ตรงกับโมเดลของคุณ
         ex_records = ExerciseRecord.objects.filter(user=request.user)  # แก้ไขให้ตรงกับโมเดลของคุณ
         
@@ -237,3 +268,111 @@ class ProgressOverviewView(views.View):
             'latest_weight': latest_weight,
         }
         return render(request, 'progress.html', context)
+
+class StaffPageView(views.View):
+    def get(self, request):
+        query = request.GET
+        foods = Food.objects.all().order_by('id') # จัดเรียงตาม id
+        exercises = Exercise.objects.all().order_by('id') # จัดเรียงตาม id
+        users = User.objects.filter(is_staff = False).order_by('id')  # จัดเรียงตาม id
+        
+
+        # เช็คว่ามีคำค้นหาหรือไม่
+        food_search = foods
+        exercise_search =  exercises
+        user_search = users
+        if query.get("search_food"):
+            food_search = foods.filter(
+                Q(name__icontains=query.get("search_food"))
+                )
+        if query.get("search_exercise"):
+            exercise_search = exercises.filter(
+                Q(name__icontains=query.get("search_exercise"))
+                )
+        if query.get("search_user"):
+            user_search = users.filter(
+                Q(username__icontains=query.get("search_user"))|
+                Q(id__icontains=query.get("search_user"))|
+                Q(first_name__icontains=query.get("search_user"))|
+                Q(last_name__icontains=query.get("search_user"))
+                )
+        
+        context = {'foods': food_search, 'exercises' : exercise_search, 'users': user_search}
+        return render(request, 'staffpage.html', context)
+    
+
+class UserRecordView(views.View):
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+    # def get(self, request, pk, format=None):
+    #     appointments = self.get_object(pk)
+        # serializer = AppointmentSerializer(appointments)
+        # return Response(serializer.data)
+    
+    def get(self, request, pk, format=None):
+        query = request.GET
+        users = self.get_object(pk)
+        food_record = FoodRecord.objects.filter(user=users)
+        exercise_record = ExerciseRecord.objects.filter(user=users)
+    
+        # เช็คว่ามีคำค้นหาหรือไม่
+        food_search = food_record
+        exercise_search =  exercise_record
+
+        if query.get("search_food"):
+            food_search = food_record.filter(
+                Q(foodrecord__name__icontains=query.get("search_food"))|
+                Q(amount__icontains=query.get("search_food"))|
+                Q(sum_calories__icontains=query.get("search_food"))
+                )
+        if query.get("search_exercise"):
+            exercise_search = exercise_record.filter(
+                Q(exercise__name__icontains=query.get("search_exercise"))|
+                Q(amount__icontains=query.get("search_exercise"))| # ติดปัญหาตรงที่ไม่สามารถ search เลข int ได้
+                Q(sum_calories__icontains=query.get("search_exercise"))
+                )
+
+        context = {'foods': food_search, 'exercises' : exercise_search, 'users': users}
+        return render(request, 'user_record.html', context)
+
+class AddMenuView(views.View):
+    # def get_object(self, pk):
+    #     try:
+    #         return User.objects.get(pk=pk)
+    #     except User.DoesNotExist:
+    #         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    # def get(self, request,):
+    #     query = request.GET
+    #     users = User.objects.all()
+    #     food = Food.objects.all()
+
+    #     context = {'foods': food, 'users': users}
+    #     return render(request, 'addmenu.html', context)
+    def get(self, request):
+        form = MenuForm()
+        return render(request, "menu_form.html", {"form": form})
+    
+    # def post(self, request):
+    #     form = MenuForm(request.POST)
+    #     print(form.errors)
+    #     if form.is_valid():
+    #         form.save()
+    #         return redirect("employee")
+    #     else:
+    #         return render(request, "addmenu.html", {"form": form})
+    def add_menu(request):
+        if request.method == 'POST':
+            form = FoodForm(request.POST)
+            if form.is_valid():
+                food = form.save(commit=False)
+                food.save()
+                form.save_m2m()  # บันทึก many-to-many relationship
+                return redirect('success_page')  # ส่งไปยังหน้าถัดไปเมื่อบันทึกเสร็จ
+        else:
+            form = FoodForm()
+        return render(request, 'addmenu.html', {'form': form})

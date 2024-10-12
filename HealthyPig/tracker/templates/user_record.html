@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}User Record{% endblock %}
+
+{% block content %}
+<style>
+    .header {
+        text-align: center;
+        margin-bottom: 20px; /* ระยะห่างระหว่างหัวข้อและคอลัมน์ */
+    }
+
+    table {
+        width: 100%; /* ให้ตารางเต็มความกว้าง */
+        border-collapse: collapse; /* รวมเส้นขอบของตาราง */
+    }
+    th {
+        padding: 8px; /* เพิ่ม padding ให้เซลล์ */
+        border: 1px solid #ddd; /* เส้นขอบของเซลล์ */
+        text-align: center; /* จัดข้อความไปทางซ้าย */
+    }
+    td {
+        padding: 8px; /* เพิ่ม padding ให้เซลล์ */
+        border: 1px solid #ddd; /* เส้นขอบของเซลล์ */
+        text-align: left; /* จัดข้อความไปทางซ้าย */
+    }
+    tr[data-href] {
+        cursor: pointer; /* ทำให้แถวดูเหมือนคลิกได้ */
+    }
+    tr[data-href]:hover {
+        background-color: #f2e3fa; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+    }
+    .h1 {
+        cursor: pointer;
+        margin: auto;
+        font-size: 5vmin;
+        font-weight: 300;
+        transition: font-weight 250ms ease-in-out;
+    }
+
+    .h1:hover {
+        font-weight: 900;
+    }
+    @layer demo {
+    .highlighted-text-shadow {
+        text-shadow:
+        /* regular text-shadow */
+        0 .15ch 15px var(--shadow),
+        /* text-shadow highlight */
+        0 -5px 0 var(--highlight);
+        line-height: .75;
+        color: var(--text);
+    }
+    }
+
+    @layer demo.support {
+    :root {
+        --hue: 320; 
+        --bg: oklch(35% .3 var(--hue));
+        --text: oklch(90% .1 var(--hue));
+        --shadow: oklch(25% .2 var(--hue));
+        --highlight: oklch(98% .05 var(--hue));
+    }
+
+    }
+</style>
+<div>
+    <div class="header">
+        <h1 class="highlighted-text-shadow" style="font-size: 60px; margin-top: 40px;">{{ users.username }} Record</h1>
+        <hr>
+    </div>
+
+    <div class="container">
+        <div class="column" style="background: white; border-radius: 20px; border: 10px #FFAFCC solid">
+            <h2 style="text-align: center;">Food Record</h2>
+            <div>
+                <div>
+                    <!-- Search Form -->
+                    <form method="get" action="{% url 'user_record' users.id %}">
+                        <input class="input" type="text" id="search_food" name="search_food" placeholder="Search For Food Record/Amount/Sum Calories">
+                        <input class="button" type="submit" value="Search">
+                    </form>
+                </div>
+                
+                <table>
+                    <!-- ตารางรายการ Food -->
+                    <thead>
+                        <tr>
+                            <th>Food</th>
+                            <th>Amount</th>
+                            <th>Summary Calories</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for food in foods %}
+                        <tr>
+                            <td>{{ food.foodrecord.name }}</td>
+                            <td>{{ food.amount }}</td>
+                            <td>{{ food.sum_calories }} g.</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3">No food items available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="column" style="background: white; border-radius: 20px; border: 10px #a2d2ff solid">
+            <h2 style="text-align: center;">Exercise Record</h2>
+            <div>
+                <!-- Search Form -->
+                <form method="get" action="{% url 'user_record' users.id %}">
+                    <input class="input" type="text" id="search_exercise" name="search_exercise" placeholder="Search For Exercise Record/Amount/Sum Calories">
+                    <input class="button" type="submit" value="Search">
+                </form>
+                
+                <table>
+                    <!-- ตารางรายการ Exercise -->
+                    <thead>
+                        <tr>
+                            <th>Exercise</th>
+                            <th>Amount</th>
+                            <th>Summary Calories</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ex in exercises %}
+                        <tr>
+                            <td>{{ ex.exercise.name }}</td>
+                            <td>{{ ex.amount }} kcal</td>
+                            <td>{{ ex.sum_calories }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3">No exercise items available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+{% endblock %}
+

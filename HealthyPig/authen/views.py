@@ -15,13 +15,21 @@ class LoginView(View):
         form = AuthenticationForm()
         return render(request, 'login.html', {"form": form})
     
+    @transaction.atomic  # ใช้วิธี atomic decorator
     def post(self, request):
-        form = AuthenticationForm(data=request.POST)
+        form = AuthenticationForm(data=request.POST)  # Instantiate form with POST data
         if form.is_valid():
-            user = form.get_user() 
-            login(request,user)
-            return redirect('mainpage')
-        return render(request,'login.html', {"form":form})
+            user = form.get_user()  # Get the user object from the form
+            login(request, user)  # Log in the user
+            
+            # Redirect based on whether the user is a staff member
+            if user.is_staff:
+                return redirect('staffpage')  # Redirect staff to the staff page
+            else:
+                return redirect('mainpage')  # Redirect regular users to the main page
+
+        # If the form is not valid, render the login page again with the form and errors
+        return render(request, 'login.html', {"form": form})
 
 class LogoutView(View): 
     
@@ -33,7 +41,8 @@ class RegisterView(View):
     def get(self, request):
         form = RegisterForm()
         return render(request, 'register.html', {"form": form})
-
+    
+    @transaction.atomic  # ใช้วิธี atomic decorator
     def post(self, request):
         form = RegisterForm(request.POST)
         if form.is_valid():

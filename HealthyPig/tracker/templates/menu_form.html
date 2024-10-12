@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Register
+{% endblock %}
+
+{% block content %}
+
+  <div class="row justify-content-center" style="margin-top: 3%;">
+    <div class="col-md-6" style="border-radius: 15px; background-color: rgba(245, 250, 255, 0.75); padding: 2%; margin-top: 2%; max-height: 80vh; overflow-y: auto;">
+      <h2 id="topic" class="text-center" style="padding-top: 2%;">ADD MENU</h2>
+      <form method="POST" action="{% url 'addmenu' %}">
+        {% csrf_token %}
+        {{ form.name.errors }}
+        <!-- ชื่ออาหาร -->
+        <div class="mb-3">
+          <label id="name" for="name" class="form-label" style="margin-top: 3%;">name</label>
+            {{ form.name.errors }}
+            {{ form.name }}
+        </div>
+        <!-- แคลอรี่ -->
+        <div class="mb-3">
+          <label id="calories" for="calories" class="form-label" style="margin-top: 3%;">Calories</label>
+          {{ form.calories.errors }}
+          {{ form.calories }}
+        </div>
+        <!-- ปริมาณต่อกรัม -->
+        <div class="mb-3">
+          <label id="quantity_in_grams" for="quantity_in_grams" class="form-label" style="margin-top: 3%;">Quantity_in_grams</label>
+          {{ form.quantity_in_grams.errors }}
+          {{ form.quantity_in_grams }}
+        </div>
+        <!-- คำอธิบาย -->
+        <div class="mb-3">
+          <label id="description" for="description" class="form-label" style="margin-top: 3%;">Description</label>
+          {{ form.description.errors }}
+          {{ form.description }}
+        </div>
+        
+        <!-- obtional -->
+        <br />
+        <h2 id="topic2" class="text-center" style="padding-top: 2%;">Ingredients (OPTIONAL)</h2>
+
+        
+        <div class="mb-3" style="background-color: #ffeef0; border: 1px solid #ffb3b3; border-radius: 5px; padding: 10px; margin-bottom: 15px; margin-top: 8%;">
+          <label id="gender" for="gender" class="form-label" style="margin-top: 3%;">Ingredients</label>
+          <div class="form-control">{{ form. }}</div>
+        </div>
+
+        <button type="submit" class="button w-50 mx-auto d-block" style="margin-top: 10%;">SUBMIT</button>
+        
+        
+        <br />
+        {% comment %} ตรงนี้เอาไว้ pop up เวลาใส่ฟอร์มผิด ไม่รู้จะได้ใช้ไหม ใส่ไปก่อน {% endcomment %}
+        {% if messages %}
+          <div>
+            {% for message in messages %}
+              <p class="text-danger">{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </form>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+  <script>
+    document.querySelectorAll("[data-reload]").forEach((button) => {
+        button.onclick = function () {
+            changeLanguage(this.getAttribute("data-reload"));
+            location.reload();
+        };
+    });
+  </script>
+{% endblock %}

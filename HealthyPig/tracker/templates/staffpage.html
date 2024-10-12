@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+
+{% block title %}Staff Page{% endblock %}
+
+{% block content %}
+<style>
+    
+    .header {
+        text-align: center;
+        margin-bottom: 20px; /* ระยะห่างระหว่างหัวข้อและคอลัมน์ */
+    }
+    .container {
+        display: flex;
+        justify-content: space-between; /*จัดตำแหน่งคอลัมน์ให้ห่างกัน*/
+
+    }
+    .column {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+        margin: 0 10px; /* เพิ่มระยะห่างระหว่างคอลัมน์ */
+        height: 450px; /* ตั้งความสูงของคอลัมน์ */
+        width : 620px; /* ตั้งความสูงของคอลัมน์ */
+        overflow-y: auto; /* เพิ่ม scroll bar ถ้าเนื้อหามากเกิน */
+        background-color: aqua;
+    }
+    table {
+        width: 100%; /* ให้ตารางเต็มความกว้าง */
+        border-collapse: collapse; /* รวมเส้นขอบของตาราง */
+    }
+    th {
+        padding: 8px; /* เพิ่ม padding ให้เซลล์ */
+        border: 1px solid #ddd; /* เส้นขอบของเซลล์ */
+        text-align: center; /* จัดข้อความไปทางซ้าย */
+    }
+    td {
+        padding: 8px; /* เพิ่ม padding ให้เซลล์ */
+        border: 1px solid #ddd; /* เส้นขอบของเซลล์ */
+        text-align: left; /* จัดข้อความไปทางซ้าย */
+    }
+    tr[data-href] {
+        cursor: pointer; /* ทำให้แถวดูเหมือนคลิกได้ */
+    }
+    tr[data-href]:hover {
+        background-color: #f2e3fa; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+    }
+    .h1 {
+        cursor: pointer;
+        margin: auto;
+        font-size: 5vmin;
+        font-weight: 300;
+        transition: font-weight 250ms ease-in-out;
+    }
+    .h1:hover {
+        font-weight: 900;
+    }
+    hr{
+        border: 0;
+        height: 1px;
+        width: 10%;
+        position: relative;
+        margin: 30px auto;
+        
+        &.center-ball{
+          background: $aqua;
+          
+          &:before{
+            content: "";
+            width: 6px;
+            height: 6px;
+            background: $aqua;
+            display: inline-block;
+            border: 2px solid $aqua;
+            @include border-radius(50%);
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            margin: 0 0 0 -3px;
+          }
+        }
+      }
+
+    .button-container {
+        display: flex; /* จัดเรียงให้อยู่ในแถวเดียวกัน */
+        gap: 10px; /* เพิ่มช่องว่างระหว่างปุ่ม */
+        align-items: center; /* จัดให้อยู่ตรงกลางแนวตั้ง */
+    }
+
+    .button {
+        display: inline-block;
+        padding: 5px 10px;
+        font-size: 18px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        outline: none;
+        color: #fff;
+        background-color: #cdb4db;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 5px #999;
+    }
+
+
+    @layer demo {
+    .highlighted-text-shadow {
+        text-shadow:
+        /* regular text-shadow */
+        0 .15ch 15px var(--shadow),
+        /* text-shadow highlight */
+        0 -5px 0 var(--highlight);
+        line-height: .75;
+        color: var(--text);
+    }
+    }
+
+    @layer demo.support {
+    :root {
+        --hue: 320; 
+        --bg: oklch(35% .3 var(--hue));
+        --text: oklch(90% .1 var(--hue));
+        --shadow: oklch(25% .2 var(--hue));
+        --highlight: oklch(98% .05 var(--hue));
+    }
+
+    }
+</style>
+<div>
+    <div class="header">
+        <h1 class="highlighted-text-shadow" style="font-size: 60px; margin-top: 40px;">Staff Page</h1>   
+    </div>
+
+    <div>
+        <h1 style="text-align: center ;margin-top: -10px;">User Records</h1>
+        <hr class="center-ball">
+        <div class="container">
+            <div class="column" style="background: white; border-radius: 20px; border: 10px #cdb4db solid">
+                <div>
+                    <div>
+                        <!-- Search Form -->
+                        <form method="get" action="{% url 'staffpage' %}">
+                            <input class="input" type="text" name="search_user" placeholder="Search For Username/ID/Fullname">
+                            <input class="button" type="submit" value="Search">
+                        </form>
+                    </div>
+                    
+                    <table style="margin-top: 20px;">
+                        <!-- ตารางรายการ User -->
+                        <thead>
+                            <tr>
+                                <th>User id</th>
+                                <th>Username</th>
+                                <th>Fullname</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr data-href="{% url 'progress' %}" style="cursor: pointer;">
+                                <td>{{ user.id }}</td>
+                                <td><a href="{% url 'progresspk' user.id %}">{{ user.username }}</a></td>
+                                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                <td>{{ user.email }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3">No user items available.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    </div>
+    
+    <div class="header" style=" margin-top: 50px">
+        <hr>
+        <h1 style=" margin-top: 50px">Records</h1>
+        
+    </div>
+
+    <div class="container">
+        <div class="column" style="background: white; border-radius: 20px; border: 10px #FFAFCC solid">
+            <h2 style="text-align: center;">Food list</h2>
+            <div>
+                <div class="button-container">
+                    <!-- Search Form -->
+                    <form method="get" action="{% url 'staffpage' %}">
+                        <input class="" type="text" id="search_food" name="search_food" placeholder="Search For Food...">
+                        <input class="button" type="submit" value="Search">
+                    </form>
+                    <a class="button" href="{% url 'staffpage' %}">Add New Menu</a>
+                </div>
+                
+                <table style="margin-top: 20px;">
+                    <!-- ตารางรายการ Food -->
+                    <thead>
+                        <tr>
+                            <th>Food</th>
+                            <th>Calories (kcal)</th>
+                            <th>Quantity_In_Grams</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for food in foods %}
+                        <tr>
+                            <td>{{ food.name }}</td>
+                            <td>{{ food.calories }}</td>
+                            <td>{{ food.quantity_in_grams }} g.</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3">No food items available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="column" style="background: white; border-radius: 20px; border: 10px #a2d2ff solid">
+            <h2 style="text-align: center;">Exercise list</h2>
+            <div>
+                <!-- Search Form -->
+                <form method="get" action="{% url 'staffpage' %}">
+                    <input class="input" type="text" name="search_exercise" placeholder="Search For Exercise...">
+                    <input class="button" type="submit" value="Search">
+                </form>
+                
+                <table style="margin-top: 20px;">
+                    <!-- ตารางรายการ Exercise -->
+                    <thead>
+                        <tr>
+                            <th>Exercise</th>
+                            <th>Calories (Per/Minute)</th>
+                            <th>Add By Staff</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exercise in exercises %}
+                        <tr>
+                            <td>{{ exercise.name }}</td>
+                            <td>{{ exercise.calories_burned_per_min }} kcal</td>
+                            <td>{{ exercise.staff_id }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3">No exercise items available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('tr[data-href]');
+        rows.forEach(row => {
+            row.addEventListener('click', function() {
+                window.location.href = this.getAttribute('data-href');
+            });
+        });
+    });
+</script>
+{% endblock %}
