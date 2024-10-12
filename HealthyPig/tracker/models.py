@@ -22,7 +22,7 @@ class UserProfile(models.Model):
         return f"{self.user.username}'s Profile"
 
 class User_Info_Record(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     datetime_update = models.DateTimeField(auto_now_add=True, null=False)
     weight = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.0)
     

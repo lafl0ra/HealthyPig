@@ -44,7 +44,7 @@ class RegisterView(View):
             weight = float(form.cleaned_data['weight'])
             goal_weight = float(form.cleaned_data['goal_weight'])
 
-            # คำนวณค่าต่างๆ
+            # Calculate values
             today = datetime.today() 
             age = today.year - birth_date.year  
             if (today.month, today.day) < (birth_date.month, birth_date.day): 
@@ -81,10 +81,12 @@ class RegisterView(View):
             elif goal_weight_per_week == 'hard':
                 goal_amount_day = (goal_weight / 1) * 7
 
-            # ใช้ transaction.atomic() เพื่อบันทึกทั้งสองตาราง
-            try:
-                with transaction.atomic():
-                    new_userprofile = UserProfile(
+            # Use transaction.atomic() to ensure both tables are saved together
+                    # Update the user if needed
+                    # user.some_field = some_value  # Example if you need to update User fields
+
+                    # Create UserProfile instance
+            new_userprofile = UserProfile(
                         user=user,
                         birth_date=birth_date,
                         gender=gender,
@@ -95,19 +97,27 @@ class RegisterView(View):
                         goal_amount_day=goal_amount_day,
                         goal_weight=goal_weight
                     )
-                    datetime_update = datetime.today()
-                    user_info_record = User_Info_Record(
-                        datetime_update=datetime_update,
-                        weight=weight,
-                        user=user,  # ใช้ new_userprofile โดยตรง
-                    )
-                    new_userprofile.save()
-                    user_info_record.save()
-                return redirect('login')
 
-            except IntegrityError:
-                messages.error(request, "Error saving user info record. Please try again.")
-                return render(request, "register.html", {"form": form})
+                    # Create User_Info_Record instance
+            datetime_update = datetime.today()
+            # Get the count of records
+            record_count = User_Info_Record.objects.count()
+
+            # Create the new record with an ID based on the count
+            new_record_id = record_count + 1
+
+            user_info_record = User_Info_Record(
+                id=new_record_id,
+                datetime_update=datetime_update,
+                weight=weight,
+                user=new_userprofile,  # link to the user instance directly
+            )
+
+            user.save()
+            new_userprofile.save()
+            user_info_record.save()
+
+            return redirect('login')
         else:
             print(form.errors)
             return render(request, "register.html", {"form": form})
