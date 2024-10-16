@@ -202,6 +202,7 @@ Main Page
 
 </style>
 <div>
+{% if not user.is_staff %}
 <div class="col-md-6" style="border-radius: 50px; background-color: #faedcb; padding: 2%; margin-top: 8%; margin-bottom: 2%; width: 1300px; border: 2px solid #000; padding-bottom: 10%;">
     <h1 id="hello">
         Hello
@@ -256,6 +257,10 @@ Main Page
         </tr>
     </table>
 </div>
+{% endif %}
+{% if user.is_staff %}
+<div style="height: 30px;">  </div>
+{% endif %}
 <div class="col-md-6" style="border-radius: 50px; background-color: #c6def1 ; padding: 2%; margin-top: 6%; margin-bottom: 2%; width: 100%; border: 2px solid #000; padding-bottom: 7%;" >
     <br><br>
     <h2 id="food1">
@@ -266,9 +271,10 @@ Main Page
             <form method="GET" action="{% url 'mainpage' %}">
                 <input class="input-search" type="text" name="search" placeholder="Search Menu/Ingredient">
                 <input class="button-search" type="submit" value="Search">
+                {% if not user.is_staff %}
                 <a id="food2" class="button-add-booking">Add New Menu</a>
+                {% endif %}
             </form>
-            
             <div style="overflow-x: hidden; overflow-y: auto; max-height: 400px; width: 100%; margin-top: 2.5%;">
                 <table class="styled-table">
                     <tr>
@@ -276,7 +282,9 @@ Main Page
                         <th id="foodcal">Calories</th>
                         <th id="foodquantity">Quantity in grams</th>
                         <th id="foodowner">Creator</th>
+                        {% if not user.is_staff %}
                         <th></th>
+                        {% endif %}
                     </tr>
                     <tbody>
                         {% for food in foods %}
@@ -285,14 +293,15 @@ Main Page
                             <td style="color: darkblue;"> {{ food.calories }} kcal</td>
                             <td> {{ food.quantity_in_grams }} g . </td>
                             <td> {{ food.user.username}} </td>
+                            {% if not user.is_staff %}
                             <td>
                                 <div style="background-color: lavender; border-radius: 25px; padding: 8px; border: 2px solid indigo; text-align: center;">
-                                    {% comment %} เดะมาแก้ {% endcomment %}
-                                    <a class="foodchoose" href="{% url 'fooddetail' food.id %}" style="color: black; text-decoration: underline;">
-                                        Choose
-                                    </a>
+                                        <a class="foodchoose" href="{% url 'fooddetail' food.id %}" style="color: black; text-decoration: underline;">
+                                            Choose
+                                        </a>
                                 </div>
                             </td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -318,7 +327,9 @@ Main Page
                         <th id="exname">Name</th>
                         <th id="excalmin">Calories (Per Minute)</th>
                         <th id="excalhr">Calories (Per Hour)</th>
+                        {% if not user.is_staff %}
                         <th></th>
+                        {% endif %}
                     </tr>
                     <tbody>
                         {% for exercise in exercises %}
@@ -326,6 +337,7 @@ Main Page
                             <td> {{ exercise.name }} </td>
                             <td> {{ exercise.calories_burned_per_min }} kcal  </td>
                             <td style="color: darkblue;"> {{ exercise.calories_burned_per_hour }} kcal </td>
+                            {% if not user.is_staff %}
                             <td>
                                 <div style="background-color: lavender; border-radius: 25px; padding: 8px; border: 2px solid indigo; text-align: center;">
                                     <a class="exchoose" href="{% url 'exercisedetail' exercise.id %}" style="color: black; text-decoration: underline;">
@@ -333,7 +345,7 @@ Main Page
                                     </a>
                                 </div>
                             </td>
-                            
+                            {% endif %}
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -412,30 +424,41 @@ Main Page
         document.getElementById("logo").innerText = language[lang].logo;
         document.getElementById("navprofile").innerText = language[lang].navprofile;
         document.getElementById("navmain").innerHTML = language[lang].navmain;
-        document.getElementById("navprogress").innerHTML = language[lang].navprogress;
         document.getElementById("navlogout").innerHTML = language[lang].navlogout;
-        document.getElementById("hello").innerText = language[lang].hello;
-        document.getElementById("descriptionhello").innerText = language[lang].descriptionhello;
-        document.getElementById("piechart1").innerText = language[lang].piechart1;
-        document.getElementById("piechart2").innerHTML = language[lang].piechart2;
-        document.getElementById("piechart3").innerText = language[lang].piechart3;
-        document.getElementById("piechart4").innerText = language[lang].piechart4;
-        document.getElementById("food1").innerText = language[lang].food1;
+        // ตรวจสอบว่าไม่ใช่ staff ก่อนจะทำการเปลี่ยนข้อความ
+        {% if not user.is_staff %}
+            document.getElementById("navprogress").innerHTML = language[lang].navprogress;
+            document.getElementById("hello").innerText = language[lang].hello;
+            document.getElementById("descriptionhello").innerText = language[lang].descriptionhello;
+            document.getElementById("piechart1").innerText = language[lang].piechart1;
+            document.getElementById("piechart2").innerHTML = language[lang].piechart2;
+            document.getElementById("piechart3").innerText = language[lang].piechart3;
+            document.getElementById("piechart4").innerText = language[lang].piechart4;
+            document.getElementById("food2").innerText = language[lang].food2;
 
+            // อัปเดตปุ่ม "Choose"
+            var chooseElements = document.querySelectorAll(".foodchoose");
+            chooseElements.forEach(function (element) {
+                element.innerText = language[lang].foodchoose;
+            });
+
+            // อัปเดตปุ่ม "Choose" สำหรับการออกกำลังกาย
+            var exChooseElements = document.querySelectorAll(".exchoose");
+            exChooseElements.forEach(function (element) {
+                element.innerText = language[lang].exchoose;
+            });
+        {% endif %}
+
+        document.getElementById("food1").innerText = language[lang].food1;
         // อัปเดตการค้นหาอาหาร
         document.querySelector(".input-search").setAttribute("placeholder", language[lang].searchPlaceholder);
         document.querySelector(".button-search").setAttribute("value", language[lang].searchButton);
-        document.getElementById("food2").innerText = language[lang].food2;
+        
         document.getElementById("foodname").innerText = language[lang].foodname;
         document.getElementById("foodcal").innerText = language[lang].foodcal;
         document.getElementById("foodquantity").innerText = language[lang].foodquantity;
         document.getElementById("foodowner").innerText = language[lang].foodowner;
 
-        // อัปเดตปุ่ม "Choose"
-        var chooseElements = document.querySelectorAll(".foodchoose");
-        chooseElements.forEach(function (element) {
-            element.innerText = language[lang].foodchoose;
-        });
 
         // อัปเดตการค้นหาการออกกำลังกาย
         document.querySelector(".input-search2").setAttribute("placeholder", language[lang].searchPlaceholder2);
@@ -447,11 +470,7 @@ Main Page
         document.getElementById("excalmin").innerText = language[lang].excalmin;
         document.getElementById("excalhr").innerText = language[lang].excalhr;
 
-        // อัปเดตปุ่ม "Choose" สำหรับการออกกำลังกาย
-        var exChooseElements = document.querySelectorAll(".exchoose");
-        exChooseElements.forEach(function (element) {
-            element.innerText = language[lang].exchoose;
-        });
+
     }
 
     document.addEventListener("DOMContentLoaded", function () {

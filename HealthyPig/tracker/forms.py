@@ -9,13 +9,12 @@ class FoodRecordForm(forms.ModelForm):
     amount = forms.DecimalField(
         max_digits=5,
         decimal_places=2,
-        widget=forms.NumberInput(attrs={
-            "class": "form-control", "id": "amount"}),
+        widget=forms.NumberInput(attrs={"class": "form-control", "id": "amount"}),
         required=True,
         min_value=0,
         initial=1
     )
-    
+
     class Meta:
         model = FoodRecord
         fields = ['amount']
@@ -37,21 +36,21 @@ class ExerciseRecordForm(forms.ModelForm):
 
 
 class MenuForm(forms.ModelForm):
-
     class Meta:
         model = Food
         fields = ['name', 'calories', 'quantity_in_grams', 'description']
-        # widget=forms.NumberInput(attrs={
-        #     "class": "form-control", "id": "amount"}),
-        # required=True,
-        # min_value=0,
-        # initial=1
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter name'}),
             'calories': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter calories'}),
-            'quantity_in_grams': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter quantity_in_grams'}),
+            'quantity_in_grams': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter quantity in grams'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter description'}),
         }
+        
+    def clean_calories(self):
+        calories = self.cleaned_data.get('calories')
+        if calories < 0:
+            raise ValidationError('Calories must be a positive number.')
+        return calories
     # def clean_hire_date(self):
 
     #     hire_date = self.cleaned_data.get("hire_date")
@@ -67,19 +66,3 @@ class MenuForm(forms.ModelForm):
     #             )
     
     #     return hire_date
-class FoodForm(forms.ModelForm):
-    ingredients = forms.ModelMultipleChoiceField(
-        queryset=Ingredient.objects.all(),
-        widget=forms.CheckboxSelectMultiple,  # หรือ forms.SelectMultiple สำหรับ dropdown
-        required=False  # เนื่องจากคุณบอกว่าเป็น optional
-    )
-
-    class Meta:
-        model = Food
-        fields = ['name', 'calories', 'quantity_in_grams', 'description', 'ingredients']
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter name'}),
-            'calories': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter calories'}),
-            'quantity_in_grams': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter quantity in grams'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter description'}),
-        }

@@ -125,6 +125,8 @@ class RegisterView(View):
             user.save()
             new_userprofile.save()
             user_info_record.save()
+            # group = Group.objects.get(name='Customer')
+            # user.groups.add(group)
 
             return redirect('login')
         else:

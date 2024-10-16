@@ -7,13 +7,13 @@
             {% block title %} Title {% endblock %}
         </title>
         {% load bootstrap5 %} {% load static %} {% bootstrap_css %} {% bootstrap_javascript %}
-        <link rel="stylesheet" href="{% static 'style.css' %}" />
+        
         <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/components/charts/chart-1/assets/css/chart-1.css" />
-        {% block style %}
+        <link rel="stylesheet" href="{% static 'style.css' %}" />
         <style>
             body {
                 font-family: "lafl0raFont";
@@ -34,6 +34,8 @@
                 color: white; /* สีข้อความเมื่อชี้ */
             }
         </style>
+        {% block style %}          
+        
         {% endblock %}
     </head>
     <body>
@@ -60,9 +62,11 @@
                         <li class="nav-item d-inline mx-2">
                             <a id="navmain" class="nav-link text-success" href="{% url 'mainpage' %}"><b>Main</b></a>
                         </li>
+                        {% if not user.is_staff %}
                         <li class="nav-item d-inline mx-2">
-                            <a id="navprogress" class="nav-link text-success" href="{% url 'progress' %}"><b>Progress</b></a>
+                            <a id="navprogress" class="nav-link text-success" href="{% url 'progresspk' user.id %}"><b>Progress</b></a>
                         </li>
+                        {% endif %}
                         <li class="nav-item d-inline mx-2">
                             <a id="navlogout" class="nav-link text-danger" href="{% url 'logout' %}"><b>Logout</b></a>
                         </li>
@@ -77,5 +81,13 @@
             <div class=""></div>
             {% endblock %}
         </div>
+        <script>
+            function calculate() {
+                const amount = parseFloat(document.querySelector('[name="amount"]').value);
+                const cal = parseFloat({{ food.calories }});
+                const result = (amount * cal).toFixed(2) + " kcal";
+                document.getElementById('resultInput').value = result;
+            }
+        </script>
     </body>
 </html>

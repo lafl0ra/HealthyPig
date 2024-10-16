@@ -6,6 +6,32 @@
 Exercise Detail
 {% endblock %}
 
+{% block style %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ฟังก์ชันสำหรับคำนวณแคลอรี่
+        function calculate() {
+            const amountField = document.querySelector('[name="amount"]'); // Select the amount input
+            const amount = parseFloat(amountField.value); // Get the amount value
+            const cal = parseFloat('{{ exercise.calories_burned_per_min }}'); // Get the calorie value as a number
+            console.log("Amount:", amount);
+            console.log("Calories per minute:", cal);
+            if (isNaN(amount) || isNaN(cal)) { // Check if values are valid numbers
+                alert("Please enter a valid amount."); // Alert if not valid
+                return; // Exit the function if invalid
+            }
+            const result = (amount * cal).toFixed(2) + " kcal"; // Calculate the result
+            console.log("Result:", result);
+            document.getElementById('resultInput').value = result; // Display result
+        }
+
+        // Assign the function to the button
+        document.getElementById('calculate').onclick = calculate;
+    });
+
+</script>
+{% endblock %}
 {% block content %}
 
 <div style="margin-top: 8%;" class="container">
@@ -64,18 +90,6 @@ Exercise Detail
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('randomImage').src = getRandomImage();
     });
-
-    // ฟังก์ชันสำหรับคำนวณแคลอรี่
-    function calculate() {
-        // ดึงค่าจาก form.amount
-        const amount = parseFloat(document.querySelector('[name="amount"]').value); // เปลี่ยน 'amount' เป็นชื่อฟิลด์จริงๆ ของคุณ
-        // คำนวณค่า (ในที่นี้คุณสามารถปรับให้เป็นการคำนวณที่คุณต้องการ)
-        const cal = parseFloat({{ exercise.calories_burned_per_min }}); // Ensure exercise.calories is treated as a float
-        const result = (amount * cal).toFixed(2) + " kcal"; // ตัวอย่างการคำนวณและจัดรูปแบบเป็น 2 ตำแหน่งทศนิยม
-        
-        // แสดงผลใน input
-        document.getElementById('resultInput').value = result;
-    }
 </script>
 <script>
     var language = {

@@ -7,7 +7,6 @@ urlpatterns = [
     path('mainpage/', MainPageView.as_view(), name="mainpage"),
     path('mainpage/fooddetail/<int:pk>/', FoodDetailListView.as_view(), name="fooddetail"),
     path('mainpage/exercisedetail/<int:pk>/', ExerciseDetailListView.as_view(), name="exercisedetail"),
-    path('progress/', ProgressOverviewView.as_view(), name="progress"),
     path('progress/<int:pk>/', ProgressOverviewView.as_view(), name="progresspk"),
     path('staffpage/', StaffPageView.as_view(), name='staffpage'),
     path('user_record/<int:pk>/', UserRecordView.as_view(), name='user_record'),

@@ -15,6 +15,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction
+from django.contrib.auth.decorators import login_required
 
 # exercise/food ห้ามลบ เพิ่มกับแก้ได้อย่างเดียว
 
@@ -27,59 +28,69 @@ class HomePageView(views.View):
         # form = AuthenticationForm()
         return render(request, 'homepage.html')
     
-class MainPageView(views.View):
+class MainPageView(LoginRequiredMixin, PermissionRequiredMixin, views.View):
+    login_url = '/authen/login/'
+    permission_required = [
+        'tracker.view_food', 
+        'tracker.view_exercise', 
+        'tracker.view_foodrecord', 
+        'tracker.view_exerciserecord'
+    ]
+    
     def get(self, request):
-        # form = AuthenticationForm()
-        # today = timezone.now().date()
         today = timezone.localtime(timezone.now()).date()
-        user_profile = UserProfile.objects.get(user=request.user)
         foods = Food.objects.all().order_by('id')
         exercises = Exercise.objects.all().annotate(
             calories_burned_per_hour=F('calories_burned_per_min') * 60
-            ).order_by('id')
-        today_food = FoodRecord.objects.filter(user=request.user,datetime_record__date=today).aggregate(total=Sum('sum_calories'))['total'] or Decimal('0.00')
-        today_ex = ExerciseRecord.objects.filter(user=request.user,datetime_record__date=today).aggregate(total=Sum('sum_calories'))['total'] or Decimal('0.00')
-        query = request.GET  # ใช้สำหรับฟิลด์ค้นหา
+        ).order_by('id')
         
-        sumkcal = today_food - today_ex
-        percentkcal = (sumkcal / (user_profile.TDEE)) * 100
+        if request.user.is_staff:
+            user_profile = None
+            today_food = today_ex = sumkcal = percentkcal = None
+        else:
+            user_profile = UserProfile.objects.get(user=request.user)
+            today_food = FoodRecord.objects.filter(
+                user=request.user, 
+                datetime_record__date=today
+            ).aggregate(total=Sum('sum_calories'))['total'] or Decimal('0.00')
+            
+            today_ex = ExerciseRecord.objects.filter(
+                user=request.user, 
+                datetime_record__date=today
+            ).aggregate(total=Sum('sum_calories'))['total'] or Decimal('0.00')
+            
+            sumkcal = today_food - today_ex
+            percentkcal = (sumkcal / user_profile.TDEE) * 100
+
+        query = request.GET  # For search field handling
         
-        # เช็คว่าเป็น none ไหม
-        # เช็คว่าเป็นทศนิยมไหม แต่ถ้าไม่มีค่าทศนิยมให้แสดงค่าเป็น int เลย (ตัดจุดออก)
+        # Normalize calories and quantities to integers if they have no decimal value
         for food in foods:
             if food.calories is None:
-                food.calories = 0  # Set a default value for None
+                food.calories = 0
             elif food.calories == int(food.calories):
-                food.calories = int(food.calories)    
+                food.calories = int(food.calories)
                 
-        # เช็คว่าเป็น none ไหม
-        # เช็คว่าเป็นทศนิยมไหม แต่ถ้าไม่มีค่าทศนิยมให้แสดงค่าเป็น int เลย (ตัดจุดออก)
-        for food in foods:
             if food.quantity_in_grams is None:
-                food.quantity_in_grams = 0  # Set a default value for None
+                food.quantity_in_grams = 0
             elif food.quantity_in_grams == int(food.quantity_in_grams):
                 food.quantity_in_grams = int(food.quantity_in_grams)
-        
-        # เช็คว่าเป็นทศนิยมไหม แต่ถ้าไม่มีค่าทศนิยมให้แสดงค่าเป็น int เลย (ตัดจุดออก)
+                
         for exercise in exercises:
             if exercise.calories_burned_per_min == int(exercise.calories_burned_per_min):
                 exercise.calories_burned_per_min = int(exercise.calories_burned_per_min)
-        
-        # เช็คว่าเป็นทศนิยมไหม แต่ถ้าไม่มีค่าทศนิยมให้แสดงค่าเป็น int เลย (ตัดจุดออก)
-        for exercise in exercises:
             if exercise.calories_burned_per_hour == int(exercise.calories_burned_per_hour):
                 exercise.calories_burned_per_hour = int(exercise.calories_burned_per_hour)
-                
-        # เช็คว่ามีคำค้นหาหรือไม่
+        
+        # Search functionality
         if query.get("search"):
             search_term = query.get("search")
-            # ค้นหาโดยใช้ชื่ออาหารหรือคำบรรยาย
             foods = foods.filter(
                 Q(name__icontains=search_term) | 
                 Q(description__icontains=search_term) |
-                Q(user__username__icontains=search_term)  # ถ้าต้องการค้นหาตามชื่อผู้ใช้ด้วย
+                Q(user__username__icontains=search_term)
             )
-        # เช็คว่ามีคำค้นหาหรือไม่
+            
         if query.get("search2"):
             search_term = query.get("search2")
             exercises = exercises.filter(
@@ -89,15 +100,20 @@ class MainPageView(views.View):
                 
         return render(request, 'mainpage.html', {
             'user_profile': user_profile,
-            'foods' : foods,
-            'exercises' : exercises,
+            'foods': foods,
+            'exercises': exercises,
             'today_food': today_food,
             'today_ex': today_ex,
             'sumkcal': sumkcal,
             'percentkcal': percentkcal
         })
-
-class FoodDetailListView(views.View):
+    
+class FoodDetailListView(LoginRequiredMixin, PermissionRequiredMixin, views.View):
+    login_url = '/authen/login/'
+    permission_required = [
+        'tracker.view_foodrecord',
+        'tracker.add_foodrecord',
+    ]
     def get(self, request, pk):
         food = get_object_or_404(Food, pk=pk)  # Fetch the food object
         form = FoodRecordForm(instance=food)  # Prepopulate the form with the food instance
@@ -131,65 +147,58 @@ class FoodDetailListView(views.View):
         food = get_object_or_404(Food, pk=pk)  # ดึง Food object ตาม pk
         return render(request, 'fooddetail.html', {'form': form, 'food': food})
     
-class ExerciseDetailListView(views.View):
+class ExerciseDetailListView(LoginRequiredMixin, PermissionRequiredMixin, views.View):
+    login_url = '/authen/login/'
+    permission_required = [
+        'tracker.view_exerciserecord',
+        'tracker.add_exerciserecord',
+    ]
     def get(self, request, pk):
         exercise = get_object_or_404(Exercise, pk=pk)  # Fetch the exercise object
         form = ExerciseRecordForm(instance=exercise)  # Prepopulate the form with the exercise instance
         return render(request, 'exercisedetail.html', {'form': form, 'exercise': exercise})
 
-    @transaction.atomic
-    def post(self, request, pk):  # รับ pk สำหรับ food
-        form = FoodRecordForm(request.POST)
-
+    def post(self, request, pk):  # รับ pk สำหรับ exercise
+        form = ExerciseRecordForm(request.POST)
+        
         if form.is_valid():
-            try:
-                amount = form.cleaned_data['amount']  # เข้าถึงข้อมูลที่ผ่านการตรวจสอบแล้ว
-                food = get_object_or_404(Food, pk=pk)  # ดึง Food object ตาม pk
-                user = request.user  # ดึง user จาก request
+            amount = form.cleaned_data['amount']  # เข้าถึงข้อมูลที่ผ่านการตรวจสอบแล้ว
+            exercise = get_object_or_404(Exercise, pk=pk)  # ดึง Exercise object ตาม pk
+            user = request.user  # ดึง user จาก request
+            
+            # คำนวณแคลอรี่รวมจากการออกกำลังกาย
+            sum_calories = amount * exercise.calories_burned_per_min  # คำนวณแคลอรี่ที่เผาผลาาญ
+            
+            # สร้าง ExerciseRecord ใหม่
+            ex_record = ExerciseRecord(
+                exercise=exercise,
+                user=user,
+                amount=amount,
+                sum_calories=sum_calories
+            )
+            ex_record.save()  # บันทึกข้อมูล
 
-                # คำนวณแคลอรี่รวมจากปริมาณอาหาร
-                sum_calories = amount * food.calories  # คำนวณแคลอรี่ที่ได้รับ
+            # ส่งกลับไปที่หน้า mainpage โดยส่ง ID ไปด้วย
+            return redirect('mainpage')  # ส่ง ID ของผู้ใช้กลับไปด้วย
 
-                # สร้าง FoodRecord ใหม่
-                food_record = FoodRecord(
-                    food=food,
-                    user=user,
-                    amount=amount,
-                    sum_calories=sum_calories
-                )
-                food_record.save()  # บันทึกข้อมูล
+        # ถ้าฟอร์มไม่ถูกต้อง ส่งกลับไปยังหน้า exercise detail
+        exercise = get_object_or_404(Exercise, pk=pk)  # ดึง Exercise object ตาม pk
+        return render(request, 'exercisedetail.html', {'form': form, 'exercise': exercise})
 
-                # ส่งกลับไปที่หน้า mainpage โดยส่ง ID ไปด้วย
-                return redirect('mainpage')
-
-            except Exception as e:
-                # หากมีข้อผิดพลาด จะ rollback การเปลี่ยนแปลงทั้งหมด
-                transaction.set_rollback(True)
-                print(f"Error: {e}")  # สำหรับการดีบัก (ควรใช้ logging ในโปรเจคจริง)
-
-        # ถ้าฟอร์มไม่ถูกต้อง ส่งกลับไปยังหน้า food detail
-        food = get_object_or_404(Food, pk=pk)  # ดึง Food object ตาม pk
-        return render(request, 'fooddetail.html', {'form': form, 'food': food})
-
-class ProgressOverviewView(views.View):
+class ProgressOverviewView(LoginRequiredMixin, PermissionRequiredMixin, views.View):
+    login_url = '/authen/login/'
+    permission_required = [
+        'tracker.view_foodrecord',
+        'tracker.view_exerciserecord',
+        'tracker.view_user_info_record'
+    ]
     def get(self, request, pk):
         # Get the current user
         user = request.user
-        user_id = request.GET.get('user_id')
-
-        # If the logged-in user is a staff member, get the user by pk
-        # if user.is_staff:
-        #     User = get_user_model()  
-        #     user = get_object_or_404(User, pk=pk) 
-        
         if user.is_staff:
             user = get_object_or_404(User, pk=pk)
             print(user.username)
             # user = get_object_or_404(User, pk=user_id)
-        else:
-            # Default to the logged-in user
-            print(user.id)
-            user = request.user
         
         userpro = UserProfile.objects.get(user=user)
         
@@ -211,8 +220,6 @@ class ProgressOverviewView(views.View):
             .annotate(total_exercise_calories=Sum('sum_calories'))  # Sum calories for exercise
             .order_by('datetime_record__date')
         )
-        
-        userpro = UserProfile.objects.get(user=user)
         
         weight_data = (
             User_Info_Record.objects.filter(user=userpro)
@@ -269,7 +276,8 @@ class ProgressOverviewView(views.View):
         }
         return render(request, 'progress.html', context)
 
-class StaffPageView(views.View):
+class StaffPageView(LoginRequiredMixin, views.View):
+    login_url = '/login/'
     def get(self, request):
         query = request.GET
         foods = Food.objects.all().order_by('id') # จัดเรียงตาม id
@@ -301,7 +309,8 @@ class StaffPageView(views.View):
         return render(request, 'staffpage.html', context)
     
 
-class UserRecordView(views.View):
+class UserRecordView(LoginRequiredMixin, views.View):
+    login_url = '/login/'
     def get_object(self, pk):
         try:
             return User.objects.get(pk=pk)
@@ -339,7 +348,8 @@ class UserRecordView(views.View):
         context = {'foods': food_search, 'exercises' : exercise_search, 'users': users}
         return render(request, 'user_record.html', context)
 
-class AddMenuView(views.View):
+class AddMenuView(LoginRequiredMixin, views.View):
+    login_url = '/login/'
     # def get_object(self, pk):
     #     try:
     #         return User.objects.get(pk=pk)
@@ -365,14 +375,3 @@ class AddMenuView(views.View):
     #         return redirect("employee")
     #     else:
     #         return render(request, "addmenu.html", {"form": form})
-    def add_menu(request):
-        if request.method == 'POST':
-            form = FoodForm(request.POST)
-            if form.is_valid():
-                food = form.save(commit=False)
-                food.save()
-                form.save_m2m()  # บันทึก many-to-many relationship
-                return redirect('success_page')  # ส่งไปยังหน้าถัดไปเมื่อบันทึกเสร็จ
-        else:
-            form = FoodForm()
-        return render(request, 'addmenu.html', {'form': form})

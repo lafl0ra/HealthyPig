@@ -6,58 +6,76 @@
 Food Detail
 {% endblock %}
 
-{% block content %}
+{% block style %}
+<script>
+    // Function to calculate calories
+    document.addEventListener('DOMContentLoaded', function() {
+        function calculate() {
+            //console.log("calculate function called");
+            const amountField = document.querySelector('[name="amount"]'); // Select the amount input
+            const amount = parseFloat(amountField.value); // Get the amount value
+            const cal = parseFloat('{{ food.calories }}'); // Get the calorie value as a number
+            //console.log("Amount:", amount);
+            //console.log("Calories per gram:", cal);
+            if (isNaN(amount) || isNaN(cal)) { // Check if values are valid numbers
+                alert("Please enter a valid amount."); // Alert if not valid
+                return; // Exit the function if invalid
+            }
+            const result = (amount * cal).toFixed(2) + " kcal"; // Calculate the result
+            //console.log("Result:", result);
+            document.getElementById('resultInput').value = result; // Display result
+        }
 
-<div style="margin-top: 8%;" class="container">
+        // Assign the function to the button
+        document.getElementById('calculate').onclick = calculate;
+    });
+</script> 
+{% endblock %}
+{% block content %}
+<div class="container" style="margin-top: 8%;">
     <div class="row">
         <div class="col-sm">
-            <h1 style="margin-top: 2%; font-size: 64px;color: darkblue;">{{ food.name }}</h1>
-            <form style="margin-top: 2%;" method="POST"> {% comment %} ส่งฟอร์มไปยังเซิร์ฟเวอร์ด้วย POST {% endcomment %}
+            <h1 class="mt-2" style="font-size: 64px; color: darkblue;">{{ food.name }}</h1>
+            <form method="POST" class="mt-2">
                 {% csrf_token %}
                 <div style="width: 50%;">
                     {% if food.description %}
-                    <p id="des"> <b> Description : </b> {{ food.description }}
-                    </p>
+                    <p id="des"><b>Description:</b> {{ food.description }}</p>
                     {% endif %}
                     {% if food.quantity_in_grams %}
-                    <p id="quantity"> <b> Quantity in grams : </b> {{ food.quantity_in_grams }} grams . </p>
+                    <p id="quantity"><b>Quantity in grams:</b> {{ food.quantity_in_grams }} grams</p>
                     {% endif %}
                     {% if food.ingredients.all %}
                     <h3 id="ingredient">Ingredients:</h3>
-                    <ul> 
+                    <ul>
                         {% for ingredient in food.ingredients.all %}
                         <li>{{ ingredient.name }}</li>
                         {% endfor %}
                     </ul>
                     {% endif %}
-                    <table>
-                        <tr>
-                            <td>
-                                <tr>
-                                <b id="amount">Serve Amount:</b>
-                                {{ form.amount }}
-                                <tr>
-                            </td>
-                        </tr>
-                        <tr>
-                            <button id="calculate" type="button" class="btn btn-primary" style="margin-bottom: 10px; margin-top: 15%;" onclick="calculate()">Calculate </button>
-                            <input style="width: 50%; margin-top: 2%;" id="resultInput" class="form-control bg-white border-info text-info" value="{{ food.calories }} kcal" readonly>
-                        </tr>
-                    </table>
-                </div>                
-                <button id="save" type="submit" class="btn btn-success w-20 mt-5">Save</button>
+                    <div class="form-group">
+                        <label id="amount"><b>Serve Amount:</b>
+                            {{ form.amount }}
+                        </label>
+                    </div>
+                    <button id="calculate" type="button" class="btn btn-primary mb-3 mt-3" onclick="calculate();">Calculate</button>
+                    <input type="text" id="resultInput" class="form-control bg-white border-info text-info" value="{{ food.calories }} kcal" readonly style="width: 50%;">
+                </div>
+                <button id="save" type="submit" class="btn btn-success mt-5">Save</button>
             </form>
         </div>
         <div class="col-sm">
-            {% comment %} แสดงรูปภาพแบบสุ่ม {% endcomment %}
-            <div style="margin-top: 5%;">
-                <img style="width: 600px;" id="randomImage" alt="Random Image">
+            <div class="mt-5">
+                <img id="randomImage" alt="Random Image" style="width: 600px;">
             </div>
         </div>
     </div>
 </div>
+
 <script>
-    // สร้างลิสต์ของรูปภาพ
+    console.log(calculate);
+
+    // List of images
     const images = [
         '{% static "fooddetailrandom (1).jpg" %}',
         '{% static "fooddetailrandom (2).jpg" %}',
@@ -66,30 +84,17 @@ Food Detail
         '{% static "fooddetailrandom (5).jpg" %}'
     ];
 
-    // ฟังก์ชันเพื่อสุ่มเลือกรูปภาพ
+    // Function to get a random image
     function getRandomImage() {
         const randomIndex = Math.floor(Math.random() * images.length);
         return images[randomIndex];
     }
 
-    // แสดงรูปภาพแบบสุ่มเมื่อโหลดหน้า
+    // Show a random image on page load
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('randomImage').src = getRandomImage();
     });
-
-    // ฟังก์ชันสำหรับคำนวณแคลอรี่
-    function calculate() {
-        // ดึงค่าจาก form.amount
-        const amount = parseFloat(document.querySelector('[name="amount"]').value); // เปลี่ยน 'amount' เป็นชื่อฟิลด์จริงๆ ของคุณ
-        // คำนวณค่า (ในที่นี้คุณสามารถปรับให้เป็นการคำนวณที่คุณต้องการ)
-        const cal = parseFloat({{ food.calories }}); // Ensure food.calories is treated as a float
-        const result = (amount * cal).toFixed(2) + " kcal"; // ตัวอย่างการคำนวณและจัดรูปแบบเป็น 2 ตำแหน่งทศนิยม
-        
-        // แสดงผลใน input
-        document.getElementById('resultInput').value = result;
-    }
 </script>
-{% comment %} for language {% endcomment %}
 <script>
     var language = {
         en: {
@@ -129,7 +134,7 @@ Food Detail
         document.getElementById("navlogout").innerHTML = language[lang].navlogout;
         document.getElementById("des").innerHTML = language[lang].des;
         document.getElementById("quantity").innerHTML = language[lang].quantity;
-        document.getElementById("amount").innerText = language[lang].amount;
+        document.getElementById("amount").innerHTML = language[lang].amount + " Serve Amount";
         document.getElementById("calculate").innerText = language[lang].calculate;
         document.getElementById("save").innerText = language[lang].save;
 
