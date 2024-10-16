@@ -282,9 +282,7 @@ Main Page
                         <th id="foodcal">Calories</th>
                         <th id="foodquantity">Quantity in grams</th>
                         <th id="foodowner">Creator</th>
-                        {% if not user.is_staff %}
                         <th></th>
-                        {% endif %}
                     </tr>
                     <tbody>
                         {% for food in foods %}
@@ -293,7 +291,6 @@ Main Page
                             <td style="color: darkblue;"> {{ food.calories }} kcal</td>
                             <td> {{ food.quantity_in_grams }} g . </td>
                             <td> {{ food.user.username}} </td>
-                            {% if not user.is_staff %}
                             <td>
                                 <div style="background-color: lavender; border-radius: 25px; padding: 8px; border: 2px solid indigo; text-align: center;">
                                         <a class="foodchoose" href="{% url 'fooddetail' food.id %}" style="color: black; text-decoration: underline;">
@@ -301,7 +298,6 @@ Main Page
                                         </a>
                                 </div>
                             </td>
-                            {% endif %}
                         </tr>
                         {% endfor %}
                     </tbody>

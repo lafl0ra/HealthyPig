@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block title %}
-หน้าแรก 
+็Home Page
 {% endblock %}
 
 {% block extra_css %}
@@ -11,20 +11,18 @@
 {% endblock %}
 
 {% block content %}
-    <div>
-        <h1 style="text-align: center; align-items: center;">WELCOME HEALTHYPIG</h1>
-        <h1 style="text-align: center; align-items: center;">ยินดีต้อนรับสู่แอปคำนวณแคลอรี่</h1>
+    <div style="margin-top: 8%;">
+        <h1 id="welcome" style="text-align: center; align-items: center;">WELCOME HEALTHYPIG</h1>
     </div>
         <!-- ส่วน Hero -->
         <section class="hero">
             <div class="container">
-                <p style="text-align: center; align-items: center;">เว็ปที่จะช่วยคุณให้คำนวณปริมาณแคลอรี่ที่คุณบริโภคต่อวัน เพื่อการควบคุมการกินและสุขภาพที่ดียิ่งขึ้น</p>
+                <p id="des" style="text-align: center; align-items: center;">website that will help you calculate the amount of calories you consume daily for better eating control and health.</p>
             </div>
-            <div>
-                <img src="{% static 'logoPig1' %}" />
+            <div style="display: grid; place-items: center; margin-bottom: 3%; margin-top: 3%;">
+                <img style="height: 300px" src="{% static 'logoPig1.png' %}" />
             </div>
         </section>
-    
         <!-- ส่วนคุณสมบัติ -->
         <!-- <section class="features">
             <div class="container">
@@ -56,9 +54,66 @@
         <!-- ส่วนการติดต่อ -->
         <section class="contact">
             <div class="bottom-right" style="background-color:pink">
-                <h2>ติดต่อเรา</h2>
-                <p>หากคุณมีคำถามหรือข้อเสนอแนะ กรุณาติดต่อเราผ่านทางอีเมล <a href="mailto:healthypig@gmail.com">healthypig@gmail.com</a></p>
+                <h2 id="headcontact">Contact Us</h2>
+                <p id="contact"> If you have any questions or suggestions, please contact us via email at <a href="mailto:healthypig@gmail.com">healthypig@gmail.com</a></p>
             </div>
         </section>
+        
+<script>
+    var language = {
+        en: {
+            logo: "Healthy-Pig",
+            navprofile: "I'm, {{ user.username }}",
+            navmain: "<b>Main</b>",
+            navprogress: "<b>Progress</b>",
+            navlogout: "Logout",
+            welcome: "WELCOME HEALTHYPIG",
+            des: "website that will help you calculate the amount of calories you consume daily for better eating control and health.",
+            headcontact: "Contact Us",
+            contact: "If you have any questions or suggestions, please contact us via email at <a href='mailto:healthypig@gmail.com'>healthypig@gmail.com</a>",
+        },
+        th: {
+            logo: "หมูแข็งแรง",
+            navprofile: "ฉันคือ {{ user.username }}",
+            navmain: "<b>หน้าหลัก</b>",
+            navprogress: "<b>ความคืบหน้า</b>",
+            navlogout: "ออกจากระบบ",
+            welcome: "ยินดีต้อนรับสู่แอปคำนวณแคลอรี่หมูแข็งแรง",
+            des: "เว็ปที่จะช่วยคุณให้คำนวณปริมาณแคลอรี่ที่คุณบริโภคต่อวัน เพื่อการควบคุมการกินและสุขภาพที่ดียิ่งขึ้น",
+            headcontact: "ติดต่อเรา",
+            contact: "หากคุณมีคำถามหรือข้อเสนอแนะ กรุณาติดต่อเราผ่านทางอีเมล <a href='mailto:healthypig@gmail.com'>healthypig@gmail.com</a>",
+        },
+    };
+
+
+    // ฟังก์ชันเพื่อเปลี่ยนภาษา
+    function changeLanguage(lang) {
+        localStorage.setItem("preferredLanguage", lang);
+        document.getElementById("logo").innerText = language[lang].logo;
+        document.getElementById("navprofile").innerText = language[lang].navprofile;
+        document.getElementById("navmain").innerHTML = language[lang].navmain;
+        document.getElementById("navlogout").innerHTML = language[lang].navlogout;
+        document.getElementById("welcome").innerText = language[lang].welcome;
+        document.getElementById("des").innerText = language[lang].des;
+        document.getElementById("headcontact").innerText = language[lang].headcontact;
+        document.getElementById("contact").innerHTML = language[lang].contact;
+        // ตรวจสอบว่าไม่ใช่ staff ก่อนจะทำการเปลี่ยนข้อความ
+        {% if not user.is_staff %}
+            document.getElementById("navprogress").innerHTML = language[lang].navprogress;
+        {% endif %}
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const preferredLanguage = localStorage.getItem("preferredLanguage") || "en";
+        changeLanguage(preferredLanguage);
+    });
+
+    document.querySelectorAll("[data-reload]").forEach((button) => {
+        button.onclick = function () {
+            changeLanguage(this.getAttribute("data-reload"));
+            location.reload();
+        };
+    });
+</script>
 {% endblock %}
 

@@ -23,7 +23,8 @@ from django.contrib.auth.decorators import login_required
 # ในฟิลด์ของ DateTimeField ในโมเดล ซึ่งจะช่วยให้ระบบบันทึกวันที่และเวลาลงไปโดยอัตโนมัติเมื่อมีการบันทึก (insert) 
 # หรืออัพเดต (update) ข้อมูลในโมเดลโดยไม่ต้องเพิ่มค่ามาในฟอร์มหรือจาก view ครับ
 
-class HomePageView(views.View):
+class HomePageView(LoginRequiredMixin, views.View):
+    login_url = '/authen/login/'
     def get(self, request):
         # form = AuthenticationForm()
         return render(request, 'homepage.html')
@@ -111,8 +112,7 @@ class MainPageView(LoginRequiredMixin, PermissionRequiredMixin, views.View):
 class FoodDetailListView(LoginRequiredMixin, PermissionRequiredMixin, views.View):
     login_url = '/authen/login/'
     permission_required = [
-        'tracker.view_foodrecord',
-        'tracker.add_foodrecord',
+        'tracker.view_food'
     ]
     def get(self, request, pk):
         food = get_object_or_404(Food, pk=pk)  # Fetch the food object

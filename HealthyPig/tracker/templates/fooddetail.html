@@ -61,7 +61,12 @@ Food Detail
                     <button id="calculate" type="button" class="btn btn-primary mb-3 mt-3" onclick="calculate();">Calculate</button>
                     <input type="text" id="resultInput" class="form-control bg-white border-info text-info" value="{{ food.calories }} kcal" readonly style="width: 50%;">
                 </div>
+                {% if not user.is_staff %}
                 <button id="save" type="submit" class="btn btn-success mt-5">Save</button>
+                {% else %}
+                <button id="edit" href="" class="btn btn-warning mt-5">Edit Menu</button>
+                <button id="delete" href="" class="btn btn-danger mt-5">Delete Menu</button>
+                {% endif %}
             </form>
         </div>
         <div class="col-sm">

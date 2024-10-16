@@ -4,10 +4,9 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>
-            {% block title %} Title {% endblock %}
+            {% block title %} {% endblock %}
         </title>
         {% load bootstrap5 %} {% load static %} {% bootstrap_css %} {% bootstrap_javascript %}
-        
         <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -28,14 +27,12 @@
                 transition: background-color 0.3s, color 0.3s; /* เอฟเฟกต์เมื่อเอาเมาส์ไปวาง */
                 font-size: 0.9em; /* ขนาดฟอนต์ */
             }
-
             .btn-language:hover {
                 background-color: #6c757d; /* สีพื้นหลังเมื่อชี้ */
                 color: white; /* สีข้อความเมื่อชี้ */
             }
         </style>
         {% block style %}          
-        
         {% endblock %}
     </head>
     <body>
