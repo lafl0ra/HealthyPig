@@ -37,16 +37,23 @@ class LogoutView(View):
         logout(request)
         return redirect('login')
 
+
 class RegisterView(View):
     def get(self, request):
         form = RegisterForm()
         return render(request, 'register.html', {"form": form})
     
-    @transaction.atomic  # ใช้วิธี atomic decorator
+    @transaction.atomic  # Use the atomic decorator
     def post(self, request):
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            # Save user instance but do not commit to the database yet
+            user = form.save(commit=False)
+            # Set first_name and last_name from the form data
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.save()  # Save the user instance to the database
+            
             birth_date = form.cleaned_data['birth_date']
             gender = form.cleaned_data['gender']
             height = float(form.cleaned_data['height'])
@@ -54,16 +61,16 @@ class RegisterView(View):
             goal_weight = float(form.cleaned_data['goal_weight'])
 
             # Calculate values
-            today = datetime.today() 
-            age = today.year - birth_date.year  
-            if (today.month, today.day) < (birth_date.month, birth_date.day): 
+            today = datetime.today()
+            age = today.year - birth_date.year
+            if (today.month, today.day) < (birth_date.month, birth_date.day):
                 age -= 1
             
             BMI = weight / (height / 100) ** 2
             BMR = 0
             if gender == "F":
                 BMR = 665 + (9.6 * weight) + (1.8 * height) - (4.7 * age)
-            else: 
+            else:
                 BMR = 66 + (13.7 * weight) + (5 * height) - (6.8 * age)
 
             TDEE = 0
@@ -90,24 +97,20 @@ class RegisterView(View):
             elif goal_weight_per_week == 'hard':
                 goal_amount_day = (goal_weight / 1) * 7
 
-            # Use transaction.atomic() to ensure both tables are saved together
-                    # Update the user if needed
-                    # user.some_field = some_value  # Example if you need to update User fields
-
-                    # Create UserProfile instance
+            # Create UserProfile instance
             new_userprofile = UserProfile(
-                        user=user,
-                        birth_date=birth_date,
-                        gender=gender,
-                        height=height,
-                        BMI=BMI,
-                        BMR=BMR,
-                        TDEE=TDEE,
-                        goal_amount_day=goal_amount_day,
-                        goal_weight=goal_weight
-                    )
+                user=user,
+                birth_date=birth_date,
+                gender=gender,
+                height=height,
+                BMI=BMI,
+                BMR=BMR,
+                TDEE=TDEE,
+                goal_amount_day=goal_amount_day,
+                goal_weight=goal_weight
+            )
 
-                    # Create User_Info_Record instance
+            # Create User_Info_Record instance
             datetime_update = datetime.today()
             # Get the count of records
             record_count = User_Info_Record.objects.count()
@@ -122,11 +125,9 @@ class RegisterView(View):
                 user=new_userprofile,  # link to the user instance directly
             )
 
-            user.save()
+            # Save all instances
             new_userprofile.save()
             user_info_record.save()
-            # group = Group.objects.get(name='Customer')
-            # user.groups.add(group)
 
             return redirect('login')
         else:

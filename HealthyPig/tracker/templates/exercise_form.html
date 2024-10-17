@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}
+Add Exercise
+{% endblock %}
+
+{% block content %}
+
+  <div class="row justify-content-center" style="margin-top: 3%;">
+    <div class="col-md-6" style="border-radius: 15px; background-color: bde0fe; padding: 2%; margin-top: 2%; max-height: 80vh; overflow-y: auto;">
+      <h2 id="topic" class="text-center" style="padding-top: 2%;">ADD EXERCISE</h2>
+      <form method="POST" action="{% url 'addexercise'  %}">
+        {% csrf_token %}
+        <!-- ชื่อออกกำลังกาย -->
+        <div class="mb-3">
+          <label id="name" for="name" class="form-label" style="margin-top: 3%;">Exercise Name</label>
+            {{ form.name.errors }}
+            {{ form.name }}
+        </div>
+        <!-- แคลอรี่ต่อนาที -->
+        <div class="mb-3">
+          <label id="calories" for="calories" class="form-label" style="margin-top: 3%;">Calories_burned_per_min</label>
+          {{ form.calories_burned_per_min.errors }}
+          {{ form.calories_burned_per_min }}
+        </div>
+    
+        <!-- คำอธิบาย -->
+        <div class="mb-3">
+          <label id="description" for="description" class="form-label" style="margin-top: 3%;">Description</label>
+          {{ form.description.errors }}
+          {{ form.description }}
+        </div>
+
+        <button type="submit" class="button w-50 mx-auto d-block" style="margin-top: 10%;">SUBMIT</button>
+        
+        
+        <br />
+        {% if messages %}
+          <div>
+            {% for message in messages %}
+              <p class="text-danger">{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </form>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+  document.querySelectorAll("[data-reload]").forEach((button) => {
+      button.onclick = function () {
+          changeLanguage(this.getAttribute("data-reload"));
+          location.reload();
+      };
+  });
+
+  $(document).ready(function() {
+      $('#id_food_type').select2({
+          placeholder: 'Select a food type',
+          allowClear: true
+      });
+      $('#id_ingredients').select2({
+          placeholder: 'Select ingredients',
+          multiple: true,
+          allowClear: true
+      });
+  });
+</script>
+{% endblock %}

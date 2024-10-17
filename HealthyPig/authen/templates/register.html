@@ -33,6 +33,16 @@
           
           {{ form.password2 }}
         </div>
+        <div class="mb-3">
+          <label id="first_name" for="first_name" class="form-label" style="margin-top: 3%;">First Name</label>
+          {{ form.first_name.errors }}
+          {{ form.first_name }}
+        </div>
+        <div class="mb-3">
+          <label id="last_name" for="last_name" class="form-label" style="margin-top: 3%;">Last Name</label>
+          {{ form.last_name.errors }}
+          {{ form.last_name }}
+        </div>
         <br />
         <h2 id="topic2" class="text-center" style="padding-top: 2%;">FILL YOUR INFORMATION</h2>
         <div class="mb-3">
@@ -104,7 +114,9 @@
           weight: "Weight (kg)",
           goalweight: "Goal Weight (kg)",
           activity: "Activity Frequency",
-          weekgoal: "Weekly Weight Loss Goal"
+          weekgoal: "Weekly Weight Loss Goal",
+          first_name: "First Name",
+          last_name: "Last Name"
       },
       th: {
           logo: "หมูแข็งแรง",
@@ -120,7 +132,9 @@
           weight: "น้ำหนัก (กก.)",
           goalweight: "น้ำหนักเป้าหมาย (กก.)",
           activity: "ความถี่ของการทำกิจกรรม",
-          weekgoal: "เป้าหมายน้ำหนักที่ลดต่อสัปดาห์"
+          weekgoal: "เป้าหมายน้ำหนักที่ลดต่อสัปดาห์",
+          first_name: "ชื่อ",
+          last_name: "นามสกุล"
       },
   };
 
@@ -141,6 +155,8 @@
     document.getElementById("goalweight").innerText = language[lang].goalweight;
     document.getElementById("activity").innerText = language[lang].activity;
     document.getElementById("weekgoal").innerText = language[lang].weekgoal;
+    document.getElementById("first_name").innerText = language[lang].first_name;
+    document.getElementById("last_name").innerText = language[lang].last_name;
 }
 
   document.addEventListener("DOMContentLoaded", function () {

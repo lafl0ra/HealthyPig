@@ -1,22 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <!-- กำหนด charset เป็น UTF-8 เพื่อรองรับภาษาไทยและภาษาต่าง ๆ -->
         <meta charset="UTF-8" />
+        <!-- กำหนด viewport ให้แสดงผลได้ดีในอุปกรณ์เคลื่อนที่ -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
         <title>
-            {% block title %} {% endblock %}
+            {% block title %} {% endblock %} <!-- Block สำหรับกำหนดชื่อหน้า -->
         </title>
-        {% load bootstrap5 %} {% load static %} {% bootstrap_css %} {% bootstrap_javascript %}
+
+        <!-- โหลด bootstrap5 และ static files ของ Django -->
+        {% load bootstrap5 %} 
+        {% load static %}
+        
+        <!-- โหลด CSS และ JavaScript ของ Bootstrap -->
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+
+        <!-- โหลด jQuery สำหรับการจัดการ DOM -->
         <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+        <!-- โหลด DataTables Bootstrap CSS -->
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
+
+        <!-- โหลด Chart.js สำหรับสร้างกราฟ -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <!-- โหลด Bootstrap CSS จาก CDN -->
         <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+
+        <!-- โหลด CSS จาก bs-brain สำหรับ charts -->
         <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/components/charts/chart-1/assets/css/chart-1.css" />
+
+        <!-- โหลด style.css ที่อยู่ใน static ของ Django -->
         <link rel="stylesheet" href="{% static 'style.css' %}" />
+
         <style>
+            /* ปรับแต่งฟอนต์ของ body */
             body {
                 font-family: "lafl0raFont";
             }
+
+            /* ปรับแต่งปุ่มเปลี่ยนภาษา */
             .btn-language {
                 background-color: transparent; /* พื้นหลังใส */
                 color: #6c757d; /* สีข้อความ */
@@ -27,73 +53,123 @@
                 transition: background-color 0.3s, color 0.3s; /* เอฟเฟกต์เมื่อเอาเมาส์ไปวาง */
                 font-size: 0.9em; /* ขนาดฟอนต์ */
             }
+
+            /* เปลี่ยนสีพื้นหลังและข้อความเมื่อชี้ปุ่ม */
             .btn-language:hover {
                 background-color: #6c757d; /* สีพื้นหลังเมื่อชี้ */
                 color: white; /* สีข้อความเมื่อชี้ */
             }
         </style>
+
         {% block style %}          
-        {% endblock %}
+        {% endblock %} <!-- Block สำหรับเพิ่ม style เพิ่มเติม -->
     </head>
+
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light p-2" style="background-color: #ffc8dd; position: fixed; top: 0; width: 100%; z-index: 1000;">
+        <!-- สร้าง navbar ด้านบน -->
+        <nav class="navbar navbar-expand-lg navbar-light p-2" 
+            style="background-color: #ffc8dd; position: fixed; top: 0; width: 100%; z-index: 1000;">
+            
             <div class="container-fluid">
-                <a id="logo" class="nav-link text-dark" href="{% url 'homepage' %}" style="font-size: 25px; font-family: lafl0raFontBold; margin-right: 7%;">
+                <!-- โลโก้ลิงก์ไปหน้า homepage -->
+                <a id="logo" class="nav-link text-dark" href="{% url 'homepage' %}" 
+                    style="font-size: 25px; font-family: lafl0raFontBold; margin-right: 7%;">
                     Healthy-Pig
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+
+                <!-- ปุ่ม hamburger สำหรับขยาย navbar บนอุปกรณ์มือถือ -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" 
+                    aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
+                <!-- แสดงปุ่มเปลี่ยนภาษาเฉพาะผู้ใช้ทั่วไป (ไม่ใช่ staff) -->
+                {% if not user.is_staff %}
                 <button class="btn btn-language" data-reload="en">
                     English
                 </button>
                 <button class="btn btn-language" style="margin-left: 1%;" data-reload="th">
                     ภาษาไทย
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        {% if user.is_authenticated %}
-                        {% if not user.is_staff %}
-                        <li class="nav-item d-inline mx-2">
-                            <a id="navprofile" class="nav-link text-dark" href="{% url 'profile' %}">I'm, {{ user.username }}</a>
-                        </li>
-                        {% else %}
-                        <li class="nav-item d-inline mx-2">
-                            <a id="navprofile" class="nav-link text-dark">I'm, {{ user.username }}</a>
-                        </li>
-                        {% endif %}
+                {% endif %}
 
-                        {% if user.is_staff %}
-                        <li class="nav-item d-inline mx-2">
-                            <a id="navstaff" class="nav-link text-success" href="{% url 'staffpage' %}"><b>Staff</b></a>
-                        </li>
-                        {% endif %}
-                        <li class="nav-item d-inline mx-2">
-                            <a id="navmain" class="nav-link text-success" href="{% url 'mainpage' %}"><b>Main</b></a>
-                        </li>
-                        {% if not user.is_staff %}
-                        <li class="nav-item d-inline mx-2">
-                            <a id="navprogress" class="nav-link text-success" href="{% url 'progresspk' user.id %}"><b>Progress</b></a>
-                        </li>
-                        {% endif %}
-                        <li class="nav-item d-inline mx-2">
-                            <a id="navlogout" class="nav-link text-danger" href="{% url 'logout' %}"><b>Logout</b></a>
-                        </li>
+                <!-- ส่วนของเมนูใน navbar -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto"> <!-- จัดชิดขวา -->
+
+                        {% if user.is_authenticated %} <!-- เช็คว่าผู้ใช้ล็อกอินแล้วหรือไม่ -->
+                            
+                            <!-- แสดงชื่อผู้ใช้ -->
+                            {% if not user.is_staff %}
+                            <li class="nav-item d-inline mx-2">
+                                <a id="navprofile" class="nav-link text-success" href="{% url 'profile' %}">
+                                    I'm, {{ user.username }}
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="nav-item d-inline mx-2">
+                                <a id="navprofile" class="nav-link text-dark">
+                                    I'm, {{ user.username }}
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            <!-- ลิงก์ไปหน้า staff (ถ้าเป็น staff) -->
+                            {% if user.is_staff %}
+                            <li class="nav-item d-inline mx-2">
+                                <a id="navstaff" class="nav-link text-success" href="{% url 'staffpage' %}">
+                                    <b>Staff</b>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            <!-- ลิงก์ไปหน้า mainpage -->
+                            <li class="nav-item d-inline mx-2">
+                                <a id="navmain" class="nav-link text-success" href="{% url 'mainpage' %}">
+                                    <b>Main</b>
+                                </a>
+                            </li>
+
+                            <!-- ลิงก์ไปหน้า progress (เฉพาะผู้ใช้ทั่วไป) -->
+                            {% if not user.is_staff %}
+                            <li class="nav-item d-inline mx-2">
+                                <a id="navprogress" class="nav-link text-success" href="{% url 'progresspk' user.id %}">
+                                    <b>Progress</b>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            <!-- ลิงก์ Logout -->
+                            <li class="nav-item d-inline mx-2">
+                                <a id="navlogout" class="nav-link text-danger" href="{% url 'logout' %}">
+                                    <b>Logout</b>
+                                </a>
+                            </li>
+
                         {% endif %}
                     </ul>
                 </div>
             </div>
         </nav>
 
+        <!-- Container สำหรับเนื้อหาหลัก -->
         <div class="container py-4">
             {% block content %}
-            <div class=""></div>
+            <div class=""></div> <!-- Content หลักที่สามารถเพิ่มได้ในเทมเพลตลูก -->
             {% endblock %}
         </div>
+
+        <!-- JavaScript ฟังก์ชันคำนวณแคลอรี่ -->
         <script>
             function calculate() {
+                // รับค่าจำนวนอาหารจาก input
                 const amount = parseFloat(document.querySelector('[name="amount"]').value);
+
+                // รับค่าพลังงาน (แคลอรี่) ของอาหารจากตัวแปร food.calories
                 const cal = parseFloat({{ food.calories }});
+
+                // คำนวณและแสดงผลลัพธ์เป็น kcal
                 const result = (amount * cal).toFixed(2) + " kcal";
                 document.getElementById('resultInput').value = result;
             }

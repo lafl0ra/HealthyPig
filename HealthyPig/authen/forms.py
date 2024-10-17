@@ -20,6 +20,27 @@ class RegisterForm(UserCreationForm):
         ('normal', 'Lose 0.5 kg per week'),
         ('hard', 'Lose 1 kg per week'),
     ]
+    
+    # New fields for first name and last name
+    first_name = forms.CharField(
+        max_length=30,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Enter your first name . . .",
+            "id": "first_name"
+        }),
+        required=True
+    )
+
+    last_name = forms.CharField(
+        max_length=30,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Enter your last name . . .",
+            "id": "last_name"
+        }),
+        required=True
+    )
 
     username = forms.CharField(
         max_length=150,

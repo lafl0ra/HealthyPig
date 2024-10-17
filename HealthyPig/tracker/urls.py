@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import HomePageView, MainPageView, FoodDetailListView, ExerciseDetailListView, ProgressOverviewView, StaffPageView, UserRecordView, AddMenuView, ProfileView, WeightView, EditMenuView
+from .views import *
 
 urlpatterns = [
     path('homepage/', HomePageView.as_view(), name="homepage"),
@@ -12,6 +12,9 @@ urlpatterns = [
     path('user_record/<int:pk>/', UserRecordView.as_view(), name='user_record'),
     path('addmenu/', AddMenuView.as_view(), name='addmenu'),
     path('editmenu/<int:food_id>/', EditMenuView.as_view(), name='editmenu'),
+    path('addexercise/', AddExerciseView.as_view(), name='addexercise'),
+    path('editexercise/<int:ex_id>/', EditExerciseView.as_view(), name='editexercise'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('profile/changeweight/', WeightView.as_view(), name='changeweight'),
+    path('changepass/', ChangePasswordView.as_view(), name='changepass'),
 ]   

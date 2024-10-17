@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 
 {% block title %}Profile{% endblock %}
 
@@ -33,8 +34,6 @@
         display: flex;
         align-items: center;
         margin-top: 10px;
-
-
     }
 
     .sidebar {
@@ -59,6 +58,7 @@
         padding: 30px;
         background-color: white;
         border-radius: 10px;
+        margin-top: 50px;
     }
 
     header {
@@ -144,8 +144,8 @@
         <button type="submit" form="profileForm">Yes</button>
         <button type="button" onclick="document.getElementById('myDialog').close();">Cancel</button>
     </dialog>
-
-    <aside class="sidebar" style="margin-top: 50px;">
+    <aside class="sidebar" style="margin-top: 100px; margin-bottom: 50px;">
+        
         <nav>
             <ul>
                 <li><a href="{% url 'profile' %}">Edit Profile</a></li>
@@ -154,6 +154,8 @@
             </ul>
         </nav>
     </aside>
+
+    <a href="{% url 'changepass' %}" style="color: white; text-decoration: underline; background-color: #d63384; border-radius: 25px; padding: 1%;"> Change Password</a>
 
     <main class="main-content">
         <header>
@@ -169,20 +171,18 @@
             <div class="mb-3">
                 <label id="username" for="username" class="form-label">Username</label>
                 {{ form1.username.errors }}
-                <input class="form-control bg-white border-info text-info" value="{{ form1.username.value }}" style="width: 50%;" readonly>
+                <input type="name" name="name" class="form-control" 
+                    value="{{ form1.username.value|default:form1.username.initial}}" 
+                    style="width: 50%;">
             </div>
-            
-            
-            
-
              <!-- อีเมล -->
              <div class="mb-3">
                 <label id="email" for="email" class="form-label" required>Email</label>
                 {{ form1.email.errors }}
-                <input values = " {{form1.username.value}} ">
-                <input type="email" name="email" class="form-control bg-white border-info text-info" value="{{ form1.email.value }}" style="width: 50%;">
-
-                <!-- <span class="valid-icon">&#10003;</span> ติ๊กถูก -->
+                {% comment %} <input values = " {{form1.username.value}} "> {% endcomment %}
+                <input type="name" name="name" class="form-control" 
+                    value="{{ form1.email.value|default:form1.email.initial}}" 
+                    style="width: 50%;">
             </div>
 
             <!-- password1 -->
@@ -196,40 +196,35 @@
                 <label id="password2" for="password2" class="form-label" >Confirm password</label>
                 {{ form1.password2 }}
             </div>
-        
 
-
-
-        
             <h2 id="topic2" style="padding-top: 2%;">Personal Information</h2>
             <br>
             <!-- ชื่อจริง -->
             <div class="mb-3">
                 <label id="first-name" for="first-name" class="form-label">Firstname</label>
                 {{ form1.firstname.errors }}
-                <input type="text" id="resultInput" class="form-control bg-white border-info text-info" value="{{ form1.firstname }}"  style="width: 50%;">
-
+                <input type="name" name="name" class="form-control" 
+                    value="{{ form1.firstname.value|default:form1.firstname.initial}}" 
+                    style="width: 50%;">
             </div>
             <!-- นามสกุล -->
             <div class="mb-3">
-                <label id="first-name" for="first-name" class="form-label">Lastname</label>
+                <label id="last-name" for="last-name" class="form-label">Lastname</label>
                 {{ form1.lastname.errors }}
-                <input type="text" id="resultInput" class="form-control bg-white border-info text-info" value="{{ form1.lastname }}"  style="width: 50%;">
-
+                <input type="name" name="name" class="form-control" 
+                    value="{{ form1.lastname.value|default:form1.lastname.initial}}" 
+                    style="width: 50%;">
             </div>
             <!-- วันเกิด --> 
             <div class="mb-3">
                 <label id="birthdate" for="birth_date" class="form-label" style="margin-top: 3%;">Birth Date</label>
                 {{ form1.birth_date.errors }}
-                <input type="text" id="resultInput" class="form-control bg-white border-info text-info" value="{{ form1.username }}"  style="width: 50%;">
-
+                {{ form1.birth_date }}
             </div>
             <!-- เพศ -->
             <div class="mb-3">
                 <label id="gender" for="gender" class="form-label" style="margin-top: 3%;">Gender (Biological Sex)</label>
                 <div class="form-control">{{ form1.gender }}</div>
-                <input type="text" id="resultInput" class="form-control bg-white border-info text-info" value="{{ form1.gender }}"  style="width: 50%;">
-
             </div>
 
             <!-- น้ำหนักเป้าหมาย -->
@@ -237,10 +232,12 @@
                 <div class="mb-3">
                   <label id="goalweight" for="goal_weight" class="form-label" style="font-weight: bold; color: #d63384; margin-bottom: 5px;">Goal Weight (kg)</label>
                   {{ form1.goal_weight.errors }}
-                  <input type="text" id="resultInput" class="form-control bg-white border-info text-info" value="{{ form1.goal_weight }}"  style="width: 50%;">
-
+                  <input type="name" name="name" class="form-control" 
+                    value="{{ form1.goal_weight.value|default:form1.goal_weight.initial}}" 
+                    style="width: 50%;">
                 </div>
             </div>
+
 
             <div class="form-actions">
                 <button type="button" class="btn-cancel" style="background-color: #ff4d4d;" onclick="window.location.href='{% url 'mainpage' %}'">Cancel</button>
@@ -264,7 +261,7 @@
 
         try {
             const response = await fetch("{% url 'profile' %}", {
-                method: 'PUT', // ใช้ PUT
+                method: 'POST', // ใช้ PUT
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': '{{ csrf_token }}',

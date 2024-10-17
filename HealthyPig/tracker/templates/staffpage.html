@@ -129,7 +129,7 @@
 <div>
     {% comment %} <div style="height: 50px;"></div> {% endcomment %}
     <div class="header">
-        <h1 class="highlighted-text-shadow" style="font-size: 60px;">Staff Page</h1>   
+        <h1 class="highlighted-text-shadow" style="font-size: 60px; padding-top: 10vh;">Staff Page</h1>   
     </div>
 
     <div>
@@ -211,8 +211,7 @@
                             <td>{{ food.name }}</td>
                             <td>{{ food.calories }}</td>
                             <td>{{ food.quantity_in_grams }} g.</td>
-                            <td>
-                                
+                            <td> 
                                 <a href="{% url 'fooddetail' food.id %}" style="color: black; text-decoration: underline;">
                                     Edit
                                 </a>
@@ -242,6 +241,7 @@
                 <form method="get" action="{% url 'staffpage' %}">
                     <input class="input" type="text" name="search_exercise" placeholder="Search For Exercise...">
                     <input class="button" type="submit" value="Search">
+                    <a class="button" href="{% url 'addexercise' %}">Add New Exercise</a>
                 </form>
                 
                 <table style="margin-top: 20px;">
@@ -251,6 +251,7 @@
                             <th>Exercise</th>
                             <th>Calories (Per/Minute)</th>
                             <th>Add By Staff</th>
+                            <th>Edit</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -259,6 +260,11 @@
                             <td>{{ exercise.name }}</td>
                             <td>{{ exercise.calories_burned_per_min }} kcal</td>
                             <td>{{ exercise.staff_id }}</td>
+                            <td>
+                                <a href="{% url 'exercisedetail' exercise.id%}" style="color: black; text-decoration: underline;">
+                                    Edit
+                                </a>
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
