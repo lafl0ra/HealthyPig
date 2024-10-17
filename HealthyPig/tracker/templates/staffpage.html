@@ -127,8 +127,9 @@
     }
 </style>
 <div>
+    {% comment %} <div style="height: 50px;"></div> {% endcomment %}
     <div class="header">
-        <h1 class="highlighted-text-shadow" style="font-size: 60px; margin-top: 40px;">Staff Page</h1>   
+        <h1 class="highlighted-text-shadow" style="font-size: 60px;">Staff Page</h1>   
     </div>
 
     <div>
@@ -157,7 +158,7 @@
                         </thead>
                         <tbody>
                             {% for user in users %}
-                            <tr data-href="{% url 'progress' %}" style="cursor: pointer;">
+
                                 <td>{{ user.id }}</td>
                                 <td><a href="{% url 'progresspk' user.id %}">{{ user.username }}</a></td>
                                 <td>{{ user.first_name }} {{ user.last_name }}</td>
@@ -190,7 +191,7 @@
                         <input class="" type="text" id="search_food" name="search_food" placeholder="Search For Food...">
                         <input class="button" type="submit" value="Search">
                     </form>
-                    <a class="button" href="{% url 'staffpage' %}">Add New Menu</a>
+                    <a class="button" href="{% url 'addmenu' %}">Add New Menu</a>
                 </div>
                 
                 <table style="margin-top: 20px;">
@@ -200,6 +201,8 @@
                             <th>Food</th>
                             <th>Calories (kcal)</th>
                             <th>Quantity_In_Grams</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -208,6 +211,19 @@
                             <td>{{ food.name }}</td>
                             <td>{{ food.calories }}</td>
                             <td>{{ food.quantity_in_grams }} g.</td>
+                            <td>
+                                
+                                <a href="{% url 'fooddetail' food.id %}" style="color: black; text-decoration: underline;">
+                                    Edit
+                                </a>
+                            </td>
+                            <td>
+                                <form action="{% url 'addmenu' %}" method="POST" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="food_id" value="{{ food.id }}">
+                                    <button type="submit" name = "submit" value='delete'class="button" style="background-color: red; color: white;">Delete</button>
+                                </form>
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
@@ -261,7 +277,7 @@
 {% endblock %}
 
 {% block script %}
-<script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         const rows = document.querySelectorAll('tr[data-href]');
         rows.forEach(row => {
@@ -270,5 +286,5 @@
             });
         });
     });
-</script>
+</script> -->
 {% endblock %}

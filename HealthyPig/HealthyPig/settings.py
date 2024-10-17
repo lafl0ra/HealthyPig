@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'tracker',
     'authen',
     'bootstrap5',
+    'widget_tweaks'
 ]
 
 MIDDLEWARE = [

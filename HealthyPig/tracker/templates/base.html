@@ -53,9 +53,21 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         {% if user.is_authenticated %}
+                        {% if not user.is_staff %}
                         <li class="nav-item d-inline mx-2">
-                            <p id="navprofile" class="nav-link text-dark">I'm, {{ user.username }}</p>
+                            <a id="navprofile" class="nav-link text-dark" href="{% url 'profile' %}">I'm, {{ user.username }}</a>
                         </li>
+                        {% else %}
+                        <li class="nav-item d-inline mx-2">
+                            <a id="navprofile" class="nav-link text-dark">I'm, {{ user.username }}</a>
+                        </li>
+                        {% endif %}
+
+                        {% if user.is_staff %}
+                        <li class="nav-item d-inline mx-2">
+                            <a id="navstaff" class="nav-link text-success" href="{% url 'staffpage' %}"><b>Staff</b></a>
+                        </li>
+                        {% endif %}
                         <li class="nav-item d-inline mx-2">
                             <a id="navmain" class="nav-link text-success" href="{% url 'mainpage' %}"><b>Main</b></a>
                         </li>

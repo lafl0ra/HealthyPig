@@ -53,27 +53,34 @@ Food Detail
                         {% endfor %}
                     </ul>
                     {% endif %}
+                    {% if not user.is_staff %}
                     <div class="form-group">
-                        <label id="amount"><b>Serve Amount:</b>
-                            {{ form.amount }}
-                        </label>
+                        <label for="amount" id="amount"><b>Serve Amount:</b></label> <!-- ซ่อน label -->
+                        {{ form.amount }}  <!-- แสดงผลฟิลด์โดยตรง -->
                     </div>
+                    
                     <button id="calculate" type="button" class="btn btn-primary mb-3 mt-3" onclick="calculate();">Calculate</button>
-                    <input type="text" id="resultInput" class="form-control bg-white border-info text-info" value="{{ food.calories }} kcal" readonly style="width: 50%;">
+                    <input type="text" id="resultInput" class="form-control bg-white border-info text-info" value="{{ food.calories }} kcal" style="width: 50%;" readonly>
+                    {% endif %}
                 </div>
                 {% if not user.is_staff %}
                 <button id="save" type="submit" class="btn btn-success mt-5">Save</button>
                 {% else %}
-                <button id="edit" href="" class="btn btn-warning mt-5">Edit Menu</button>
-                <button id="delete" href="" class="btn btn-danger mt-5">Delete Menu</button>
+                    
+                    <a class="btn btn-warning mt-5" href="{% url 'editmenu' food.pk %}" style="color: black; text-decoration: underline;">
+                        Edit Menu
+                    </a>
                 {% endif %}
+                
             </form>
         </div>
+        {% if not user.is_staff %}
         <div class="col-sm">
             <div class="mt-5">
                 <img id="randomImage" alt="Random Image" style="width: 600px;">
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 
@@ -111,7 +118,7 @@ Food Detail
             des: "<b>Description :</b> {{ food.description }}",
             quantity: "<b> Quantity in grams : </b> {{ food.quantity_in_grams }} grams . ",
             ingredient:"Ingredient.",
-            amount:"Serve Amount:",
+            amount:"<b>Serve Amount:</b>",
             calculate:"Calculate",
             save:"Save",
         },
@@ -123,7 +130,7 @@ Food Detail
             navlogout: "ออกจากระบบ",
             des: "<b>คำอธิบาย :</b> {{ food.description }}",
             quantity: "<b> ปริมาณ (กรัม) : </b> {{ food.quantity_in_grams }} grams ",
-            amount:"จำนวน:",
+            amount:"<b>จำนวน:</b>",
             calculate:"คำนวณ",
             save:"บันทึก",
         },
@@ -139,9 +146,11 @@ Food Detail
         document.getElementById("navlogout").innerHTML = language[lang].navlogout;
         document.getElementById("des").innerHTML = language[lang].des;
         document.getElementById("quantity").innerHTML = language[lang].quantity;
+        document.getElementById("save").innerText = language[lang].save;
+        {% if not user.is_staff %}
         document.getElementById("amount").innerHTML = language[lang].amount + " Serve Amount";
         document.getElementById("calculate").innerText = language[lang].calculate;
-        document.getElementById("save").innerText = language[lang].save;
+        {% endif %}
 
     }
 

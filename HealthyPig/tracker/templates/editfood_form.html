@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}
+  Edit Menu
+{% endblock %}
+
+{% block content %}
+<style>
+
+</style>
+
+  <div class="row justify-content-center" style="margin-top: 3%; ">
+    <div class="col-md-6" style="width: 100vh; border-radius: 15px; background-color: #ffb6d2; padding: 2%; margin-top: 2%; max-height: 80vh; overflow-y: auto;">
+      <h2 id="topic" class="text-center" style="padding-top: 2%;  font-weight: bold;">EDIT MENU</h2>
+      <form method="GET" action="{% url 'staffpage'%}">
+        {% csrf_token %}
+        <!-- ชื่ออาหาร -->
+        <div class="mb-3">
+          <label id="name" for="name" class="form-label" style="margin-top: 3%; font-weight: bold;">Menu Name</label>
+            {{ form.name.errors }}
+            <!-- แสดงค่าให้ในช่องกรอกข้อมูลมีค่าเริ่มต้น -->
+            <input type="name" name="name" class="form-control" 
+            value="{{ form.name.value|default:form.name.initial}}" 
+            style="width: 50%;">
+            
+        </div>
+        <!-- แคลอรี่ -->
+        <div class="mb-3">
+          <label id="calories" for="calories" class="form-label" style="margin-top: 3%; font-weight: bold;">Calories</label>
+          {{ form.calories.errors }}
+          <input type="name" name="name" class="form-control" 
+            value="{{ form.calories.value|default:form.calories.initial}}" 
+            style="width: 50%;">
+        </div>
+        <!-- ปริมาณต่อกรัม -->
+        <div class="mb-3">
+          <label id="quantity_in_grams" for="quantity_in_grams" class="form-label" style="margin-top: 3%; font-weight: bold;">Quantity_in_grams</label>
+          {{ form.quantity_in_grams.errors }}
+          <!-- แสดงค่าให้ในช่องกรอกข้อมูลมีค่าเริ่มต้น -->
+          <input type="name" name="name" class="form-control" 
+          value="{{ form.quantity_in_grams.value|default:form.quantity_in_grams.initial}}" 
+          style="width: 50%;">
+        </div>
+        <!-- คำอธิบาย -->
+        <div class="mb-3">
+          <label id="description" for="description" class="form-label" style="margin-top: 3%; font-weight: bold;">Description</label>
+          {{ form.description.errors }}
+          <input type="name" name="name" class="form-control" 
+          value="{{ form.description.value|default:form.description.initial}}" 
+          style="width: 50%;">
+        </div>
+        
+        <!-- obtional -->
+        <br />
+        <h2 id="topic2" class="text-center" style="padding-top: 2%; font-weight: bold;">Ingredients (OPTIONAL)</h2>
+
+        <!-- ประเภทอาหาร -->
+        <div class="mb-3" style="background-color: #ffeef0; border: 1px solid #ffb3b3; border-radius: 5px; padding: 10px; margin-bottom: 15px; margin-top: 8%;">
+          <label id="foodtype" for="foodtype" class="form-label" style="margin-top: 3%; font-weight: bold;">Foodtype</label>
+          <!-- <div class="form-control"> {{ form.food_type|add_class:"form-select" }}</div> -->
+          <select multiple class="form-select" name="food_type" style="height: 150px;">
+            {% for food_type in form.food_type.field.queryset %}
+                <option value="{{ food_type.id }}" {% if food_type.id in form.food_type.value|default:form.food_type.initial %}selected{% endif %}>
+                    {{ food_type.name }}
+                </option>
+            {% endfor %}
+        </select>
+        </div>
+        
+        <!-- วัตถุดิบ -->
+        <div class="mb-3" style="background-color: #ffeef0; border: 1px solid #ffb3b3; border-radius: 5px; padding: 10px; margin-bottom: 15px; margin-top: 8%;">
+          <label id="ingredients" for="ingredients" class="form-label" style="margin-top: 3%; font-weight: bold;">Ingredients</label>
+          <!-- <div class="form-control"> {{ form.ingredients|add_class:"form-select" }} </div> -->
+          <select multiple class="form-select" name="ingredients" style="height: 150px;">
+            {% for ingredient in form.ingredients.field.queryset %}
+                <option value="{{ ingredient.id }}" {% if ingredient.id in form.ingredients.value|default:form.ingredients.initial %}selected{% endif %}>
+                    {{ ingredient.name }}
+                </option>
+            {% endfor %}
+        </select>
+        </div>
+
+
+            <form action="{% url 'editmenu' food.id %}" method="POST" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" name = "submit" value='delete'class="button w-50 mx-auto d-block">Submit</button>
+            </form>
+        
+        <br />
+        {% if messages %}
+          <div>
+            {% for message in messages %}
+              <p class="text-danger">{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </form>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+  <script>
+    document.querySelectorAll("[data-reload]").forEach((button) => {
+        button.onclick = function () {
+            changeLanguage(this.getAttribute("data-reload"));
+            location.reload();
+        };
+    });
+
+    $(document).ready(function() {
+        $('#id_food_type').select2({
+            placeholder: 'Select a food type',
+            allowClear: true
+        });
+        $('#id_ingredients').select2({
+            placeholder: 'Select ingredients',
+            multiple: true,
+            allowClear: true
+        });
+    });
+</script>
+{% endblock %}

@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 
 {% block title %}
-  Register
+Add Menu
 {% endblock %}
 
 {% block content %}
@@ -9,12 +10,11 @@
   <div class="row justify-content-center" style="margin-top: 3%;">
     <div class="col-md-6" style="border-radius: 15px; background-color: rgba(245, 250, 255, 0.75); padding: 2%; margin-top: 2%; max-height: 80vh; overflow-y: auto;">
       <h2 id="topic" class="text-center" style="padding-top: 2%;">ADD MENU</h2>
-      <form method="POST" action="{% url 'addmenu' %}">
+      <form method="POST" action="{% url 'addmenu'  %}">
         {% csrf_token %}
-        {{ form.name.errors }}
         <!-- ชื่ออาหาร -->
         <div class="mb-3">
-          <label id="name" for="name" class="form-label" style="margin-top: 3%;">name</label>
+          <label id="name" for="name" class="form-label" style="margin-top: 3%;">Menu Name</label>
             {{ form.name.errors }}
             {{ form.name }}
         </div>
@@ -41,17 +41,36 @@
         <br />
         <h2 id="topic2" class="text-center" style="padding-top: 2%;">Ingredients (OPTIONAL)</h2>
 
-        
+        <!-- ประเภทอาหาร -->
         <div class="mb-3" style="background-color: #ffeef0; border: 1px solid #ffb3b3; border-radius: 5px; padding: 10px; margin-bottom: 15px; margin-top: 8%;">
-          <label id="gender" for="gender" class="form-label" style="margin-top: 3%;">Ingredients</label>
-          <div class="form-control">{{ form. }}</div>
+          <label id="foodtype" for="foodtype" class="form-label" style="margin-top: 3%;">Foodtype</label>
+          <!-- <div class="form-control"> {{ form.food_type|add_class:"form-select" }}</div> -->
+          <select multiple class="form-select" name="food_type" style="height: 150px;">
+            {% for food_type in form.food_type.field.queryset %}
+                <option value="{{ food_type.id }}" {% if food_type.id in form.food_type.value %}selected{% endif %}>
+                    {{ food_type.name }}
+                </option>
+            {% endfor %}
+        </select>
+          
+        </div>
+        <!-- วัตถุดิบ -->
+        <div class="mb-3" style="background-color: #ffeef0; border: 1px solid #ffb3b3; border-radius: 5px; padding: 10px; margin-bottom: 15px; margin-top: 8%;">
+          <label id="ingredients" for="ingredients" class="form-label" style="margin-top: 3%;">Ingredients</label>
+          <!-- <div class="form-control"> {{ form.ingredients|add_class:"form-select" }} </div> -->
+          <select multiple class="form-select" name="ingredients" style="height: 150px;">
+            {% for ingredient in form.ingredients.field.queryset %}
+                <option value="{{ ingredient.id }}" {% if ingredient.id in form.ingredients.value %}selected{% endif %}>
+                    {{ ingredient.name }}
+                </option>
+            {% endfor %}
+        </select>
         </div>
 
         <button type="submit" class="button w-50 mx-auto d-block" style="margin-top: 10%;">SUBMIT</button>
         
         
         <br />
-        {% comment %} ตรงนี้เอาไว้ pop up เวลาใส่ฟอร์มผิด ไม่รู้จะได้ใช้ไหม ใส่ไปก่อน {% endcomment %}
         {% if messages %}
           <div>
             {% for message in messages %}
@@ -65,12 +84,24 @@
 {% endblock %}
 
 {% block script %}
-  <script>
-    document.querySelectorAll("[data-reload]").forEach((button) => {
-        button.onclick = function () {
-            changeLanguage(this.getAttribute("data-reload"));
-            location.reload();
-        };
-    });
-  </script>
+<script>
+  document.querySelectorAll("[data-reload]").forEach((button) => {
+      button.onclick = function () {
+          changeLanguage(this.getAttribute("data-reload"));
+          location.reload();
+      };
+  });
+
+  $(document).ready(function() {
+      $('#id_food_type').select2({
+          placeholder: 'Select a food type',
+          allowClear: true
+      });
+      $('#id_ingredients').select2({
+          placeholder: 'Select ingredients',
+          multiple: true,
+          allowClear: true
+      });
+  });
+</script>
 {% endblock %}
