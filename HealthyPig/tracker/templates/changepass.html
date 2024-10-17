@@ -1,59 +1,58 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %}  <!-- Extends the base template for consistent layout -->
 
-{% load static %}
+{% load static %}  <!-- Loads static file handling in Django -->
 
 {% block title %}
-Change Password
+Change Password  <!-- Sets the title of the page -->
 {% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'homepage.css' %}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'homepage.css' %}">  <!-- Links to an external CSS file for additional styles -->
 {% endblock %}
 
 {% block content %}
     <div style="margin-top: 8%;">
-        <h1 id="welcome" class="text-center"> Change Password </h1>
+        <h1 id="welcome" class="text-center"> Change Password </h1>  <!-- Main heading for the change password section -->
     </div>
 
-    <section class="hero">
+    <section class="hero">  <!-- Hero section for visual appeal -->
         <div style="display: grid; place-items: center; margin-bottom: 3%; margin-top: 3%;">
-            <img style="height: 300px" src="{% static 'logoPig1.png' %}" />
+            <img style="height: 300px" src="{% static 'logoPig1.png' %}" />  <!-- Displays a logo image, centered on the page -->
         </div>
     </section>
 
-    <!-- ฟอร์มเปลี่ยนรหัสผ่าน -->
+    <!-- Password change form section -->
     <section class="change-password">
-        <div class="container" style="max-width: 500px; margin: auto;">
-            <form method="post" class="border p-4 rounded bg-light">
-                {% csrf_token %}
-                {{ form.non_field_errors }}
+        <div class="container" style="max-width: 500px; margin: auto;">  <!-- Centers the form and sets a max width -->
+            <form method="post" class="border p-4 rounded bg-light">  <!-- Form for changing the password, styled with Bootstrap -->
+                {% csrf_token %}  <!-- CSRF token for security against cross-site request forgery -->
+                {{ form.non_field_errors }}  <!-- Displays any non-field errors from the form -->
 
-                <div class="form-group">
-                    <label for="id_old_password">Old Password:</label>
-                    {{ form.old_password }}
-                    {% for error in form.old_password.errors %}
-                        <div class="text-danger">{{ error }}</div>
+                <div class="form-group">  <!-- Group for old password input -->
+                    <label for="id_old_password">Old Password:</label>  <!-- Label for old password input -->
+                    {{ form.old_password }}  <!-- Renders the old password input field -->
+                    {% for error in form.old_password.errors %}  <!-- Loops through errors for the old password field -->
+                        <div class="text-danger">{{ error }}</div>  <!-- Displays errors in red text -->
                     {% endfor %}
                 </div>
 
-                <div class="form-group" style="margin-top: 2%;">
-                    <label for="id_new_password1">New Password:</label>
-                    {{ form.new_password1 }}
-                    {% for error in form.new_password1.errors %}
-                        <div class="text-danger">{{ error }}</div>
+                <div class="form-group" style="margin-top: 2%;">  <!-- Group for new password input -->
+                    <label for="id_new_password1">New Password:</label>  <!-- Label for new password input -->
+                    {{ form.new_password1 }}  <!-- Renders the new password input field -->
+                    {% for error in form.new_password1.errors %}  <!-- Loops through errors for the new password field -->
+                        <div class="text-danger">{{ error }}</div>  <!-- Displays errors in red text -->
                     {% endfor %}
                 </div>
 
-                <div class="form-group" style="margin-top: 2%;">
-                    <label for="id_new_password2">Confirm New Password:</label>
-                    {{ form.new_password2 }}
-                    {% for error in form.new_password2.errors %}
-                        <div class="text-danger">{{ error }}</div>
+                <div class="form-group" style="margin-top: 2%;">  <!-- Group for confirming new password input -->
+                    <label for="id_new_password2">Confirm New Password:</label>  <!-- Label for confirm new password input -->
+                    {{ form.new_password2 }}  <!-- Renders the confirm new password input field -->
+                    {% for error in form.new_password2.errors %}  <!-- Loops through errors for the confirm password field -->
+                        <div class="text-danger">{{ error }}</div>  <!-- Displays errors in red text -->
                     {% endfor %}
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10%;">Change Password</button>
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10%;">Change Password</button>  <!-- Submit button for the form -->
             </form>
         </div>
     </section>

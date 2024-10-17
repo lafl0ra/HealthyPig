@@ -6,7 +6,10 @@ from django.core.exceptions import ValidationError
 from datetime import date
 from django.contrib.auth.forms import PasswordChangeForm
 from django import forms
-from django.contrib.auth.forms import PasswordChangeForm
+from django import forms
+from django.contrib.auth.models import User
+from .models import UserProfile
+
 
 class FoodRecordForm(forms.ModelForm):
     amount = forms.DecimalField(
@@ -86,9 +89,6 @@ class ExerciseForm(forms.ModelForm):
         return calories_burned_per_min
         
 
-from django import forms
-from django.contrib.auth.models import User
-from .models import UserProfile
 
 class ProfileForm(forms.ModelForm):
     firstname = forms.CharField(

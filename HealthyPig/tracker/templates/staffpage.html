@@ -261,9 +261,10 @@
                             <td>{{ exercise.calories_burned_per_min }} kcal</td>
                             <td>{{ exercise.staff_id }}</td>
                             <td>
-                                <a href="{% url 'exercisedetail' exercise.id%}" style="color: black; text-decoration: underline;">
-                                    Edit
-                                </a>
+                                <form action="{% url 'exercisedetail' exercise.id%}" method="POST" style="display:inline;">
+                                    {% csrf_token %}
+                                    {{ exercise.id }}
+                                </form>
                             </td>
                         </tr>
                         {% empty %}

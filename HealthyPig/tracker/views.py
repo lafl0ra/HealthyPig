@@ -332,7 +332,7 @@ class ProgressOverviewView(LoginRequiredMixin, PermissionRequiredMixin, views.Vi
 
 
 class StaffPageView(LoginRequiredMixin, views.View):
-    login_url = '/login/'
+    login_url = '/authen/login/'
     def get(self, request):
         query = request.GET
         foods = Food.objects.all().order_by('id') # จัดเรียงตาม id
@@ -506,7 +506,7 @@ class AddMenuView(LoginRequiredMixin, views.View):
             form = MenuForm(request.POST)
             if form.is_valid():
                 food_form = form.save(commit=False)
-                food_form.user_id = getuser.id
+                food_form.user = getuser
                 food_form.save()
                 form.save_m2m()  # บันทึก many-to-many relationship
                 return redirect('staffpage')  # ส่งไปยังหน้าถัดไปเมื่อบันทึกเสร็จ
@@ -589,22 +589,24 @@ class AddExerciseView(LoginRequiredMixin, views.View):
     @transaction.atomic
     def post(self, request):
         """จัดการการเพิ่มการออกกำลังกาย"""
-        exercise_id = request.POST.get('exercise_id')  
-        user = request.user
-        getuser = User.objects.get(id=user.id)
-        form = MenuForm(request.POST)
+        # exercise_id = request.POST.get('exercise_id')
+        # print(request.user)
+        form = ExerciseForm(request.POST)
         if form.is_valid():
-            exercise_form = form.save(commit=False)
-            exercise_form.user_id = getuser.id
-            exercise_form.save()
+            exercise = form.save(commit=False)
+            exercise.staff = request.user  # ใช้ user ที่เข้าสู่ระบบ
+            exercise.save()
             # form.save_m2m()  # บันทึก many-to-many relationship
-            return redirect('staffpage')  # ส่งไปยังหน้าถัดไปเมื่อบันทึกเสร็จ
+
+
+            # return redirect('exercise_form')  # ส่งไปยังหน้าถัดไปเมื่อบันทึกเสร็จ
+            return redirect('addexercise')
         else:
             # ถ้าฟอร์มไม่ถูกต้อง ให้แสดงฟอร์มพร้อมกับข้อผิดพลาด
             print("not valid")
             print(form.errors)  # เพิ่มการตรวจสอบข้อผิดพลาด
             users = User.objects.all()
-            return render(request, "menu_form.html", {"form": form, "users": users, 'exercise_id': exercise_id})
+            return render(request, "exercise_form.html", {"form": form, "users": users, 'exercise_id': exercise_id})
 
 
 

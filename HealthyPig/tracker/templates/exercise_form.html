@@ -10,7 +10,7 @@ Add Exercise
   <div class="row justify-content-center" style="margin-top: 3%;">
     <div class="col-md-6" style="border-radius: 15px; background-color: bde0fe; padding: 2%; margin-top: 2%; max-height: 80vh; overflow-y: auto;">
       <h2 id="topic" class="text-center" style="padding-top: 2%;">ADD EXERCISE</h2>
-      <form method="POST" action="{% url 'addexercise'  %}">
+      <form method="POST">
         {% csrf_token %}
         <!-- ชื่อออกกำลังกาย -->
         <div class="mb-3">
