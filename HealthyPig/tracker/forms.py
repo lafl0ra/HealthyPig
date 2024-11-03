@@ -8,9 +8,8 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django import forms
 from django import forms
 from django.contrib.auth.models import User
-from .models import UserProfile
-
-
+from .models import UserProfile, FoodType
+# focus
 class FoodRecordForm(forms.ModelForm):
     amount = forms.DecimalField(
         max_digits=5,
@@ -24,7 +23,7 @@ class FoodRecordForm(forms.ModelForm):
     class Meta:
         model = FoodRecord
         fields = ['amount']
-        
+# focus    
 class ExerciseRecordForm(forms.ModelForm):
     amount = forms.DecimalField(
         max_digits=5,
@@ -39,19 +38,20 @@ class ExerciseRecordForm(forms.ModelForm):
         model = ExerciseRecord
         fields = ['amount']
 
-
+# aom
 class MenuForm(forms.ModelForm):
     class Meta:
         model = Food
-        fields = ['name', 'calories', 'quantity_in_grams', 'description']
+        fields = ['name', 'calories', 'quantity_in_grams', 'description','food_type', 'ingredients', 'user']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter name'}),
             'calories': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter calories'}),
             'quantity_in_grams': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter quantity in grams', 'required':'False'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter description'}),
-            'food_type': forms.SelectMultiple(attrs={'class': 'form-control','required':'False'}),  # Multiple ingredient selection
-            'ingredients': forms.SelectMultiple(attrs={'class': 'form-control','required':'False'}),  # Multiple ingredient selection
         }
+        food_type = forms.ModelChoiceField(queryset=FoodType.objects.all(), required=False, widget=forms.SelectMultiple(attrs={"class": 'form-control'}))
+        ingredients = forms.ModelChoiceField(queryset=Food.objects.all(), required=False, widget=forms.SelectMultiple(attrs={"class": 'form-control'}))
+
 
     #ให้แคลอรีใส่ได้แค่ค่าที่ >= 0
     def clean_calories(self):
@@ -68,7 +68,7 @@ class MenuForm(forms.ModelForm):
         return quantity
     
 
-
+# aom
 class ExerciseForm(forms.ModelForm):
     class Meta:
         model = Exercise
@@ -89,7 +89,7 @@ class ExerciseForm(forms.ModelForm):
         return calories_burned_per_min
         
 
-
+# aom
 class ProfileForm(forms.ModelForm):
     firstname = forms.CharField(
         max_length=150,
@@ -230,7 +230,7 @@ class ProfileForm(forms.ModelForm):
 
         return cleaned_data
 
-
+# aom
 class WeightForm(forms.ModelForm):
     weight = forms.DecimalField(
         max_digits=10,
@@ -246,7 +246,7 @@ class WeightForm(forms.ModelForm):
         model = User_Info_Record
         fields = ['weight']
 
-
+# aom
 class ExerForm(forms.ModelForm):
     class Meta:
         model = Food
@@ -271,9 +271,8 @@ class ExerForm(forms.ModelForm):
             ingredients = cleaned_data.get('ingredients')
 
             return cleaned_data
-        
 
-# forms.py
+# focus
 class CustomPasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(
         label='Old Password',

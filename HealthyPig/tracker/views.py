@@ -230,7 +230,7 @@ class ExerciseDetailListView(LoginRequiredMixin, PermissionRequiredMixin, views.
 
 
 
-
+# focus
 class ProgressOverviewView(LoginRequiredMixin, PermissionRequiredMixin, views.View):
     login_url = '/authen/login/'
     permission_required = [
@@ -273,24 +273,30 @@ class ProgressOverviewView(LoginRequiredMixin, PermissionRequiredMixin, views.Vi
         latest_weight = weight_data.first()  # ดึงข้อมูลน้ำหนักล่าสุด
 
         # Merging food and exercise data by date
+        
         calorie_summary = []
         food_dict = {item['datetime_record__date']: item['total_food_calories'] for item in food_data}
         exercise_dict = {item['datetime_record__date']: item['total_exercise_calories'] for item in exercise_data}
 
         # Combine both records based on the date
+        # โค้ดนี้รวมข้อมูลแคลอรีจากอาหารและการออกกำลังกายตามวันที่ แล้วคำนวณแคลอรีสุทธิ (แคลอรีที่ได้รับ - แคลอรีที่เผาผลาญ) สำหรับแต่ละวัน และเก็บผลลัพธ์ในรายการ calorie_summary
         all_dates = set(food_dict.keys()).union(set(exercise_dict.keys()))
         for date in all_dates:
-            food_calories = food_dict.get(date, 0)
+            food_calories = food_dict.get(date, 0) # ดึงค่าแคลอรี่ในอาหาร ถ้าไม่มีให้ใช้ค่าเริ่มต้นเป็น 0
             exercise_calories = exercise_dict.get(date, 0)
             net_calories = food_calories - exercise_calories  # Calculate net calories
+            
+            # ข้อมูลที่เพิ่มเป็น dictionary ซึ่งประกอบด้วย:
+            # 'date': date: วันที่ที่กำลังประมวลผลอยู่ในลูป
+            # 'total_calories': net_calories: ค่าแคลอรีสุทธิ (แคลอรีที่ได้รับลบด้วยแคลอรีที่เผาผลาญ)
+            # ใช้เพื่อเพิ่มข้อมูลใหม่เข้าไปในรายการ calorie_summary
             calorie_summary.append({
-                'date': date,
-                'total_calories': net_calories,
-            })
+                    'date': date,
+                    'total_calories': net_calories,
+                })
         
-
         if userr.is_authenticated:  # เช็คว่า user มีการล็อกอินอยู่
-            # ดึงข้อมูลอาหารทั้งหมดของผู้ใช้แล้วทำการรวม sum_calories ตามวันที่
+            # โค้ดนี้ดึงข้อมูลการบันทึกแคลอรี (FoodRecord) ของผู้ใช้ที่ล็อกอิน, แปลง datetime_record ให้เป็นแค่วันที่, รวมแคลอรีทั้งหมดในแต่ละวัน, และจัดเรียงตามวันที่
             daily_data = (
                 FoodRecord.objects
                 .filter(user=userr)  # กรองข้อมูลตามผู้ใช้ที่ล็อกอิน
@@ -301,6 +307,7 @@ class ProgressOverviewView(LoginRequiredMixin, PermissionRequiredMixin, views.Vi
             )
 
             # สร้าง list สำหรับ JavaScript
+            # โค้ดนี้สร้างรายการของวันที่ (labels) และแคลอรี (calories) เพื่อใช้ใน JavaScript (เช่น การสร้างกราฟ) โดยแปลงวันที่เป็นรูปแบบ YYYY-MM-DD และกำหนดค่าเริ่มต้นเป็น 0 สำหรับแคลอรีที่ไม่มีข้อมูล.
             labels = [entry['date'].strftime('%Y-%m-%d') for entry in daily_data]
             calories = [entry['total_calories'] or 0 for entry in daily_data]  # กำหนดค่าเริ่มต้นเป็น 0
         else:
@@ -477,7 +484,6 @@ class StaffPageView(views.View):
 
 
 
-
 class AddMenuView(LoginRequiredMixin, views.View):
     login_url = '/login/'
     
@@ -488,13 +494,11 @@ class AddMenuView(LoginRequiredMixin, views.View):
         context = {'users': users, "form": form}
         return render(request, 'menu_form.html', context)
 
-    @transaction.atomic
+    
     def post(self, request):
         """จัดการการเพิ่มอาหาร"""
         food_id = request.POST.get('food_id')  # Retrieve the food_id from POST data
         action = request.POST.get('submit')
-        user = request.user
-        getuser = User.objects.get(id=user.id)
 
         # ตรวจสอบว่ามีคำขอลบหรือไม่
         if action == 'delete':
@@ -505,10 +509,7 @@ class AddMenuView(LoginRequiredMixin, views.View):
             print("yaaaaaaaaaaaaaaaaa")
             form = MenuForm(request.POST)
             if form.is_valid():
-                food_form = form.save(commit=False)
-                food_form.user = getuser
-                food_form.save()
-                form.save_m2m()  # บันทึก many-to-many relationship
+                form.save()
                 return redirect('staffpage')  # ส่งไปยังหน้าถัดไปเมื่อบันทึกเสร็จ
             else:
                 # ถ้าฟอร์มไม่ถูกต้อง ให้แสดงฟอร์มพร้อมกับข้อผิดพลาด
@@ -517,7 +518,6 @@ class AddMenuView(LoginRequiredMixin, views.View):
                 users = User.objects.all()
                 return render(request, "menu_form.html", {"form": form, "users": users, 'food_id': food_id})
 
-    @transaction.atomic
     def delete(self, request, food_id):
         """ลบอาหาร"""
         print("In the Delete already")

@@ -11,6 +11,7 @@ Add Menu
     <div class="col-md-6" style="border-radius: 15px; background-color: rgba(245, 250, 255, 0.75); padding: 2%; margin-top: 2%; max-height: 80vh; overflow-y: auto;">
       <h2 id="topic" class="text-center" style="padding-top: 2%;">ADD MENU</h2>
       <form method="POST" action="{% url 'addmenu'  %}">
+        <input type="hidden" name="user" value="{{ user.id }}">
         {% csrf_token %}
         <!-- ชื่ออาหาร -->
         <div class="mb-3">
